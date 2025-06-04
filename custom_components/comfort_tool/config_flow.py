@@ -4,8 +4,12 @@ import voluptuous as vol
 
 from .const import DOMAIN, CONF_TA, CONF_TR, CONF_VA, CONF_RH, CONF_CLO, CONF_MET
 
-class ComfortToolConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
-    """Handle a config flow for Comfort Tool."""
+class ComfortToolConfigFlow(config_entries.ConfigFlow, domain="comfort_tool"):
+    async def async_step_user(self, user_input=None):
+        if user_input is not None:
+            return self.async_create_entry(title="Comfort Tool", data={})
+        return self.async_show_form(step_id="user")
+
 
     VERSION = 1
 
