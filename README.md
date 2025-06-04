@@ -1,32 +1,69 @@
-# Comfort Tool Sensors
+# Comfort Tool Sensors for Home Assistant
 
-Интеграция Home Assistant для расчета параметров микроклимата (PMV, PPD, SET, Cooling Effect, Sensation) с использованием библиотеки [comfort_tool](https://github.com/CenterForTheBuiltEnvironment/comfort_tool).
+This is a custom [Home Assistant](https://www.home-assistant.io/) integration that provides calculated thermal comfort indicators using the [CBE Comfort Tool](https://github.com/CenterForTheBuiltEnvironment/comfort_tool) library.
 
-## Установка
+## 🧊 Features
 
-1. Установите HACS, если он еще не установлен.
-2. Добавьте этот репозиторий в HACS как пользовательский.
-3. Установите интеграцию "Comfort Tool Sensors" через HACS.
+This integration calculates and provides the following thermal comfort metrics as sensors:
 
-## Настройка
+- **PMV** (Predicted Mean Vote)
+- **PPD** (Predicted Percentage of Dissatisfied)
+- **SET** (Standard Effective Temperature)
+- **CE** (Cooling Effect)
+- **Thermal Sensation** (qualitative value)
 
-После установки:
+## ⚙️ Configuration
 
-1. Перейдите в "Настройки" > "Устройства и службы".
-2. Нажмите "Добавить интеграцию" и выберите "Comfort Tool Sensors".
-3. Укажите:
-   - Существующие сенсоры: температура воздуха (ta), радиационная температура (tr), скорость воздуха (va), влажность (rh).
-   - `input_number` для одежды (clo) и метаболизма (met).
+This integration requires the following existing entities to work:
 
-## Использование
+### Required Sensors:
 
-После настройки будут доступны следующие сенсоры:
-- PMV
-- PPD
-- SET
-- Cooling Effect
-- Sensation
+- `ta`: Air temperature sensor (°C)
+- `tr`: Mean radiant temperature sensor (°C)
+- `va`: Air velocity sensor (m/s)
+- `rh`: Relative humidity sensor (%)
 
-## Лицензия
+### Required Input Numbers:
 
-MIT
+- `clo`: Clothing insulation level (`input_number`, unit: clo)
+- `met`: Metabolic rate (`input_number`, unit: met)
+
+You will select these entities via the UI during setup.
+
+## 📦 Installation
+
+### Recommended: HACS
+
+1. Go to HACS → Integrations → 3-dot menu → Custom repositories.
+2. Add this repository URL:  
+   `https://github.com/1iverea9er/ha-comfort-tool`  
+   with category: *Integration*.
+3. Install **Comfort Tool Sensors**.
+4. Restart Home Assistant.
+5. Add the integration via **Settings → Devices & Services → Add Integration** and search for **Comfort Tool Sensors**.
+
+### Manual Installation
+
+1. Copy the contents of this repository into:
+2. Restart Home Assistant.
+3. Add the integration via UI as described above.
+
+## 🔍 Example Use Cases
+
+- Use PMV and PPD in energy optimization automations.
+- Display SET and Thermal Sensation on dashboards.
+- Combine CE with cooling system logic.
+
+## 🧪 Notes
+
+- Internally uses the [comfort_tool](https://github.com/CenterForTheBuiltEnvironment/comfort_tool) Python library by the Center for the Built Environment (UC Berkeley).
+- All sensors update automatically when any of the input values change.
+
+## 🧾 License
+
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for more information.
+
+## 🙏 Acknowledgements
+
+- [comfort_tool](https://github.com/CenterForTheBuiltEnvironment/comfort_tool) by CBE
+- Home Assistant community and HACS maintainers
