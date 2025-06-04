@@ -1,0 +1,49 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Comfort Tool Sensors Setup",
+        "description": "Select existing sensors and input parameters.",
+        "data": {
+          "name": "Integration name",
+          "ta": "Air temperature sensor (ta)",
+          "tr": "Mean radiant temperature sensor (tr)",
+          "va": "Air velocity sensor (va)",
+          "rh": "Relative humidity sensor (rh)",
+          "clo": "Clothing level (clo, input_number)",
+          "met": "Metabolic rate (met, input_number)"
+        }
+      }
+    },
+    "error": {
+      "invalid_sensor": "Invalid sensor"
+    },
+    "abort": {
+      "single_instance_allowed": "Only one instance of the integration is allowed."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "comfort_tool_pmv": {
+        "name": "PMV",
+        "state": "PMV"
+      },
+      "comfort_tool_ppd": {
+        "name": "PPD",
+        "state": "PPD"
+      },
+      "comfort_tool_set": {
+        "name": "SET",
+        "state": "SET"
+      },
+      "comfort_tool_ce": {
+        "name": "Cooling Effect",
+        "state": "CE"
+      },
+      "comfort_tool_sensation": {
+        "name": "Thermal Sensation",
+        "state": "Sensation"
+      }
+    }
+  }
+}
