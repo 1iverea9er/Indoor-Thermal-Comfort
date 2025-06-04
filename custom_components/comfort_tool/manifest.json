@@ -3,7 +3,7 @@
   "name": "Comfort Tool Sensors",
   "version": "1.0.0",
   "documentation": "https://github.com/1iverea9er/Indoor-Thermal-Comfort",
-  "requirements": ["comfort_tool"],
+  "requirements": ["comfort-tool"],
   "dependencies": [],
   "codeowners": ["@1iverea9er"],
   "config_flow": true
