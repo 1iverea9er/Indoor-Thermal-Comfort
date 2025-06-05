@@ -2,16 +2,24 @@
 import logging
 from homeassistant.components.sensor import SensorEntity
 from homeassistant.const import TEMP_CELSIUS
+from homeassistant.helpers.event import async_track_state_change_event
+
 from .comfort import calculate_thermal_comfort
+from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
+SENSOR_TYPES = {
+    "pmv": {"name": "Thermal Comfort PMV", "unit": ""},
+    "ppd": {"name": "Thermal Comfort PPD", "unit": "%"},
+    "set": {"name": "Thermal Comfort SET", "unit": TEMP_CELSIUS},
+    "ce": {"name": "Thermal Comfort Cooling Effect", "unit": TEMP_CELSIUS},
+    "sensation": {"name": "Thermal Comfort Sensation", "unit": ""},
+}
+
 async def async_setup_entry(hass, config_entry, async_add_entities):
-    from homeassistant.helpers.entity import Entity
     _LOGGER.info("Setting up Indoor Thermal Comfort sensors")
     config = hass.data[DOMAIN][config_entry.entry_id]
-    _LOGGER.debug(f"Received config: {config}")
-    _LOGGER.debug("Setting up comfort_tool sensor entry")
     options = config_entry.options
 
     required = ("ta", "tr", "va", "rh", "clo", "met")
@@ -19,18 +27,21 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
         _LOGGER.error("Missing one or more required options: %s", required)
         return
 
-    sensor = PMVSensor(hass, options)
-    async_add_entities([sensor])
-    _LOGGER.debug("Sensor entity added: %s", sensor.name)
+    entities = []
+    for sensor_type in SENSOR_TYPES:
+        entities.append(ThermalComfortSensor(hass, options, sensor_type))
+    async_add_entities(entities)
+    _LOGGER.info("Thermal comfort sensors added: %s", [e.name for e in entities])
 
-class PMVSensor(SensorEntity):
-    def __init__(self, hass, options):
-        _LOGGER.debug("Initializing PMVSensor with options: %s", options)
+
+class ThermalComfortSensor(SensorEntity):
+    def __init__(self, hass, options, sensor_type):
         self._hass = hass
         self._options = options
-        self._attr_name = "Thermal Comfort PMV"
-        self._attr_unit_of_measurement = TEMP_CELSIUS
-        self._attr_unique_id = "thermal_comfort_pmv"
+        self._sensor_type = sensor_type
+        self._attr_name = SENSOR_TYPES[sensor_type]["name"]
+        self._attr_unit_of_measurement = SENSOR_TYPES[sensor_type]["unit"]
+        self._attr_unique_id = f"thermal_comfort_{sensor_type}"
         self._state = None
 
         self._ta = options["ta"]
@@ -40,15 +51,16 @@ class PMVSensor(SensorEntity):
         self._clo = options["clo"]
         self._met = options["met"]
 
+    async def async_added_to_hass(self):
         for entity_id in (self._ta, self._tr, self._va, self._rh, self._clo, self._met):
-            hass.helpers.event.async_track_state_change_event(entity_id, self._state_changed)
+            async_track_state_change_event(self._hass, entity_id, self._state_changed)
+        await self._state_changed(None)
 
     @property
     def native_value(self):
         return self._state
 
     async def _state_changed(self, event):
-        _LOGGER.debug("State changed detected for event: %s", event)
         try:
             states = self._hass.states
             ta = float(states.get(self._ta).state)
@@ -59,8 +71,9 @@ class PMVSensor(SensorEntity):
             met = float(states.get(self._met).state)
 
             results = calculate_thermal_comfort(ta, tr, va, rh, clo, met)
-            self._state = round(results["pmv"], 2)
-            _LOGGER.debug("Calculated PMV: %s", self._state)
+            value = results.get(self._sensor_type)
+            self._state = round(value, 2) if isinstance(value, (float, int)) else value
             self.async_write_ha_state()
+            _LOGGER.debug("Updated %s: %s", self._sensor_type, self._state)
         except Exception as e:
-            _LOGGER.error("Error computing thermal comfort: %s", e)
+            _LOGGER.error("Error updating %s sensor: %s", self._sensor_type, e)
