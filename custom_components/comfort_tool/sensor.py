@@ -1,63 +1,68 @@
 from homeassistant.components.sensor import SensorEntity
-from homeassistant.const import TEMP_CELSIUS, PERCENTAGE
+from homeassistant.helpers.event import async_track_state_change
 from homeassistant.core import callback
 
-from .lib.comfort_tool.comfort import calculate_pmv, calculate_ppd
-
-SENSOR_TYPES = {
-    "pmv": ["PMV", "Predicted Mean Vote", "pmv", TEMP_CELSIUS],
-    "ppd": ["PPD", "Predicted Percentage of Dissatisfied", "ppd", PERCENTAGE],
-}
+from .const import DOMAIN
+from .lib.comfort_tool.comfort import pmv_ppd
 
 async def async_setup_entry(hass, config_entry, async_add_entities):
     options = config_entry.options
+    if not all(k in options for k in ("ta", "tr", "va", "rh", "clo", "met")):
+        return
 
-    input_entities = {
-        "ta": options.get("ta"),
-        "tr": options.get("tr"),
-        "va": options.get("va"),
-        "rh": options.get("rh"),
-        "clo": options.get("clo"),
-        "met": options.get("met"),
-    }
+    sensor = ComfortSensor(hass, config_entry)
+    async_add_entities([sensor])
 
-    sensors = [
-        ThermalComfortSensor(sensor_type, input_entities)
-        for sensor_type in SENSOR_TYPES
-    ]
-
-    async_add_entities(sensors)
-
-class ThermalComfortSensor(SensorEntity):
-    def __init__(self, sensor_type, input_entities):
-        self._type = sensor_type
-        self._attr_name = SENSOR_TYPES[sensor_type][0]
-        self._attr_icon = f"mdi:thermometer"
-        self._attr_native_unit_of_measurement = SENSOR_TYPES[sensor_type][3]
+class ComfortSensor(SensorEntity):
+    def __init__(self, hass, config_entry):
+        self._hass = hass
+        self._config_entry = config_entry
         self._state = None
-        self._input_entities = input_entities
+        self._attr_name = "PMV"
+        self._attr_unique_id = f"{config_entry.entry_id}_pmv"
 
-    async def async_update(self):
-        hass = self.hass
-        try:
-            ta = float(hass.states.get(self._input_entities["ta"]).state)
-            tr = float(hass.states.get(self._input_entities["tr"]).state)
-            va = float(hass.states.get(self._input_entities["va"]).state)
-            rh = float(hass.states.get(self._input_entities["rh"]).state)
-            clo = float(hass.states.get(self._input_entities["clo"]).state)
-            met = float(hass.states.get(self._input_entities["met"]).state)
-        except (TypeError, ValueError, AttributeError):
-            self._state = None
-            return
+        self.entity_ids = [
+            config_entry.options["ta"],
+            config_entry.options["tr"],
+            config_entry.options["va"],
+            config_entry.options["rh"],
+            config_entry.options["clo"],
+            config_entry.options["met"],
+        ]
 
-        pmv = calculate_pmv(ta, tr, va, rh, clo, met)
-        ppd = calculate_ppd(pmv)
-
-        if self._type == "pmv":
-            self._state = round(pmv, 2)
-        elif self._type == "ppd":
-            self._state = round(ppd, 1)
+        async_track_state_change(hass, self.entity_ids, self._state_changed)
 
     @property
-    def native_value(self):
+    def state(self):
         return self._state
+
+    @property
+    def unit_of_measurement(self):
+        return "PMV"
+
+    @callback
+    def _state_changed(self, entity_id, old_state, new_state):
+        try:
+            states = self._hass.states
+            ta = float(states.get(self._config_entry.options["ta"]).state)
+            tr = float(states.get(self._config_entry.options["tr"]).state)
+            va = float(states.get(self._config_entry.options["va"]).state)
+            rh = float(states.get(self._config_entry.options["rh"]).state)
+            clo = float(states.get(self._config_entry.options["clo"]).state)
+            met = float(states.get(self._config_entry.options["met"]).state)
+
+            pmv, _ = pmv_ppd(
+                ta=ta,
+                tr=tr,
+                vel=va,
+                rh=rh,
+                clo=clo,
+                met=met,
+                wme=0,
+                standard="ashrae"
+            )
+
+            self._state = round(pmv, 2)
+            self.async_write_ha_state()
+        except Exception:
+            self._state = None
