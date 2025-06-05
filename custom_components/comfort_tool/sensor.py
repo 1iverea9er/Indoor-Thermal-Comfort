@@ -55,12 +55,12 @@ class ThermalComfortSensor(SensorEntity):
         self._met = options["met"]
 
     
-async def async_added_to_hass(self):
-        _LOGGER.debug("Sensor '%s' added to hass", self.name)
-    
-        for entity_id in (self._ta, self._tr, self._va, self._rh, self._clo, self._met):
-            async_track_state_change_event(self._hass, entity_id, self._state_changed)
-        await self._state_changed(None)
+    async def async_added_to_hass(self):
+            _LOGGER.debug("Sensor '%s' added to hass", self.name)
+
+            for entity_id in (self._ta, self._tr, self._va, self._rh, self._clo, self._met):
+                async_track_state_change_event(self._hass, entity_id, self._state_changed)
+            await self._state_changed(None)
 
     @property
     def native_value(self):
