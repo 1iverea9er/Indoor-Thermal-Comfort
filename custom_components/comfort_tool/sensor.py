@@ -7,6 +7,10 @@ from .comfort import calculate_thermal_comfort
 _LOGGER = logging.getLogger(__name__)
 
 async def async_setup_entry(hass, config_entry, async_add_entities):
+    from homeassistant.helpers.entity import Entity
+    _LOGGER.info("Setting up Indoor Thermal Comfort sensors")
+    config = hass.data[DOMAIN][config_entry.entry_id]
+    _LOGGER.debug(f"Received config: {config}")
     _LOGGER.debug("Setting up comfort_tool sensor entry")
     options = config_entry.options
 
