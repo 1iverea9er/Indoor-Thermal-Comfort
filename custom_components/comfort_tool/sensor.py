@@ -37,6 +37,7 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
 
 class ComfortSensor(SensorEntity):
     def __init__(self, hass, coordinator, ta_entity, tr_entity, va_entity, rh_entity, clo_entity, met_entity):
+        self._attr_should_poll = True
         self._hass = hass
         self._coordinator = coordinator
         self._ta_entity = ta_entity
@@ -52,6 +53,10 @@ class ComfortSensor(SensorEntity):
         self._state = None
 
     @property
+
+    async def async_added_to_hass(self):
+        await self.async_update()
+        self.async_write_ha_state()
     def native_value(self):
         return self._state
 
