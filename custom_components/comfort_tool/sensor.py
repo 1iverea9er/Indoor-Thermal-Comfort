@@ -1,82 +1,92 @@
 import logging
 from homeassistant.components.sensor import SensorEntity
-from homeassistant.const import UnitOfTemperature
+from homeassistant.const import TEMP_CELSIUS
+from homeassistant.helpers.entity import EntityCategory
 from .comfort import calculate_thermal_comfort
 
 _LOGGER = logging.getLogger(__name__)
 
-SENSOR_TYPES = {
-    "pmv": "Predicted Mean Vote",
-    "ppd": "Predicted Percentage of Dissatisfied",
-    "set": "Standard Effective Temperature",
-}
-
 async def async_setup_entry(hass, config_entry, async_add_entities):
-    options = config_entry.options
-    _LOGGER.debug("Setting up comfort sensors with options: %s", options)
+    _LOGGER.debug("Setting up comfort sensors from config entry")
 
-    required = ("ta", "tr", "va", "rh", "clo", "met")
-    missing = [k for k in required if k not in options]
+    coordinator = hass.data["comfort_tool"][config_entry.entry_id]["coordinator"]
+    config = config_entry.data
 
-    if missing:
-        _LOGGER.error("Missing one or more required options: %s", missing)
-        return
+    ta_entity = config.get("ta")
+    tr_entity = config.get("tr")
+    va_entity = config.get("va")
+    rh_entity = config.get("rh")
+    clo_entity = config.get("clo")
+    met_entity = config.get("met")
 
-    try:
-        sensors = [
-            ThermalComfortSensor(hass, config_entry, sensor_type)
-            for sensor_type in SENSOR_TYPES
-        ]
-        async_add_entities(sensors, update_before_add=True)
-        _LOGGER.info("Thermal comfort sensors initialized successfully.")
-    except Exception as e:
-        _LOGGER.exception("Error initializing sensors: %s", e)
+    entities = [
+        ComfortSensor(
+            hass,
+            coordinator,
+            ta_entity,
+            tr_entity,
+            va_entity,
+            rh_entity,
+            clo_entity,
+            met_entity,
+        )
+    ]
 
-class ThermalComfortSensor(SensorEntity):
-    def __init__(self, hass, config_entry, sensor_type):
+    _LOGGER.debug("Adding entities: %s", entities)
+    async_add_entities(entities)
+
+class ComfortSensor(SensorEntity):
+    def __init__(self, hass, coordinator, ta_entity, tr_entity, va_entity, rh_entity, clo_entity, met_entity):
         self._hass = hass
-        self._config_entry = config_entry
-        self._sensor_type = sensor_type
-        self._name = f"Comfort {sensor_type.upper()}"
+        self._coordinator = coordinator
+        self._ta_entity = ta_entity
+        self._tr_entity = tr_entity
+        self._va_entity = va_entity
+        self._rh_entity = rh_entity
+        self._clo_entity = clo_entity
+        self._met_entity = met_entity
+        self._attr_name = "Thermal Comfort Index"
+        self._attr_unit_of_measurement = TEMP_CELSIUS
+        self._attr_entity_category = EntityCategory.DIAGNOSTIC
+        self._attr_unique_id = f"thermal_comfort_{ta_entity}_{tr_entity}"
         self._state = None
-        self._attr_native_unit_of_measurement = UnitOfTemperature.CELSIUS if sensor_type == "set" else None
-        _LOGGER.debug("Created sensor: %s", self._name)
 
     @property
-    def name(self):
-        return self._name
-
-    @property
-    def unique_id(self):
-        return f"{self._config_entry.entry_id}_{self._sensor_type}"
-
-    @property
-    def state(self):
+    def native_value(self):
         return self._state
 
-    
     async def async_update(self):
-    def safe_float(value):
+        _LOGGER.debug("Updating Thermal Comfort Sensor")
+
+        ta = self._get_state(self._ta_entity)
+        tr = self._get_state(self._tr_entity)
+        va = self._get_state(self._va_entity)
+        rh = self._get_state(self._rh_entity)
+        clo = self._get_state(self._clo_entity)
+        met = self._get_state(self._met_entity)
+
+        _LOGGER.debug("Sensor values: ta=%s, tr=%s, va=%s, rh=%s, clo=%s, met=%s", ta, tr, va, rh, clo, met)
+
+        if None in (ta, tr, va, rh, clo, met):
+            _LOGGER.warning("One or more sensor values are None, skipping calculation")
+            self._state = None
+            return
+
         try:
-            return float(value)
-        except (TypeError, ValueError):
+            self._state = calculate_thermal_comfort(ta, tr, va, rh, clo, met)
+            _LOGGER.debug("Calculated thermal comfort index: %s", self._state)
+        except Exception as e:
+            _LOGGER.error("Error calculating thermal comfort: %s", e)
+            self._state = None
+
+    def _get_state(self, entity_id):
+        state = self._hass.states.get(entity_id)
+        if state is None:
+            _LOGGER.warning("Entity %s not found", entity_id)
             return None
 
-    _LOGGER.debug("Updating sensor %s...", self.name)
-
-        opts = self._config_entry.options
-        _LOGGER.debug("Updating sensor %s with options: %s", self._sensor_type, opts)
         try:
-            ta = float(self._hass.states.get(opts["ta"]["entity_id"]).state)
-            tr = float(self._hass.states.get(opts["tr"]["entity_id"]).state)
-            va = float(self._hass.states.get(opts["va"]["entity_id"]).state)
-            rh = float(self._hass.states.get(opts["rh"]["entity_id"]).state)
-            clo = float(self._hass.states.get(opts["clo"]["entity_id"]).state)
-            met = float(self._hass.states.get(opts["met"]["entity_id"]).state)
-
-            result = calculate_thermal_comfort(ta, tr, va, rh, clo, met)
-            self._state = result.get(self._sensor_type)
-            _LOGGER.debug("Sensor %s updated state: %s", self._sensor_type, self._state)
-        except Exception as e:
-            _LOGGER.exception("Error updating sensor %s: %s", self._sensor_type, e)
-            self._state = None
+            return float(state.state)
+        except ValueError:
+            _LOGGER.warning("Could not convert state of %s to float: %s", entity_id, state.state)
+            return None
