@@ -1,0 +1,49 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Настройка Comfort Tool Sensors",
+        "description": "Выберите существующие сенсоры и входные параметры.",
+        "data": {
+          "name": "Имя интеграции",
+          "ta": "Сенсор температуры воздуха (ta)",
+          "tr": "Сенсор радиационной температуры (tr)",
+          "va": "Сенсор скорости воздуха (va)",
+          "rh": "Сенсор относительной влажности (rh)",
+          "clo": "Уровень одежды (clo, input_number)",
+          "met": "Метаболизм (met, input_number)"
+        }
+      }
+    },
+    "error": {
+      "invalid_sensor": "Недопустимый сенсор"
+    },
+    "abort": {
+      "single_instance_allowed": "Допускается только один экземпляр интеграции."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "comfort_tool_pmv": {
+        "name": "PMV",
+        "state": "PMV"
+      },
+      "comfort_tool_ppd": {
+        "name": "PPD",
+        "state": "PPD"
+      },
+      "comfort_tool_set": {
+        "name": "SET",
+        "state": "SET"
+      },
+      "comfort_tool_ce": {
+        "name": "Охлаждающий эффект",
+        "state": "CE"
+      },
+      "comfort_tool_sensation": {
+        "name": "Ощущение",
+        "state": "Ощущение"
+      }
+    }
+  }
+}
