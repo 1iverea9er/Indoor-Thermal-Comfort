@@ -1,6 +1,6 @@
 import logging
 from homeassistant.components.sensor import SensorEntity
-from homeassistant.const import TEMP_CELSIUS
+from homeassistant.const import UnitOfTemperature
 from .comfort import calculate_thermal_comfort
 
 _LOGGER = logging.getLogger(__name__)
@@ -39,7 +39,7 @@ class ThermalComfortSensor(SensorEntity):
         self._sensor_type = sensor_type
         self._name = f"Comfort {sensor_type.upper()}"
         self._state = None
-        self._attr_native_unit_of_measurement = TEMP_CELSIUS if sensor_type == "set" else None
+        self._attr_native_unit_of_measurement = UnitOfTemperature.CELSIUS if sensor_type == "set" else None
         _LOGGER.debug("Created sensor: %s", self._name)
 
     @property
