@@ -55,7 +55,7 @@ class ThermalComfortSensor(SensorEntity):
         return self._state
 
     
-async def async_update(self):
+    async def async_update(self):
     def safe_float(value):
         try:
             return float(value)
@@ -67,12 +67,12 @@ async def async_update(self):
         opts = self._config_entry.options
         _LOGGER.debug("Updating sensor %s with options: %s", self._sensor_type, opts)
         try:
-            ta = float(self._hass.states.get(opts["ta"]).state)
-            tr = float(self._hass.states.get(opts["tr"]).state)
-            va = float(self._hass.states.get(opts["va"]).state)
-            rh = float(self._hass.states.get(opts["rh"]).state)
-            clo = float(self._hass.states.get(opts["clo"]).state)
-            met = float(self._hass.states.get(opts["met"]).state)
+            ta = float(self._hass.states.get(opts["ta"]["entity_id"]).state)
+            tr = float(self._hass.states.get(opts["tr"]["entity_id"]).state)
+            va = float(self._hass.states.get(opts["va"]["entity_id"]).state)
+            rh = float(self._hass.states.get(opts["rh"]["entity_id"]).state)
+            clo = float(self._hass.states.get(opts["clo"]["entity_id"]).state)
+            met = float(self._hass.states.get(opts["met"]["entity_id"]).state)
 
             result = calculate_thermal_comfort(ta, tr, va, rh, clo, met)
             self._state = result.get(self._sensor_type)
