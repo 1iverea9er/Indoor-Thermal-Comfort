@@ -52,7 +52,7 @@ class ComfortSensor(SensorEntity):
         self._attr_device_class = SensorDeviceClass.TEMPERATURE
         self._attr_state_class = SensorStateClass.MEASUREMENT
         self._attr_entity_category = EntityCategory.DIAGNOSTIC
-        self._attr_unique_id = f"thermal_comfort_{ta_entity}_{tr_entity}"
+        self._attr_unique_id = f"{DOMAIN}_{name}"
         self._state = None
 
     @property
