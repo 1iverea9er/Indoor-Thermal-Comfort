@@ -47,12 +47,13 @@ class ComfortSensor(SensorEntity):
         self._rh_entity = rh_entity
         self._clo_entity = clo_entity
         self._met_entity = met_entity
+        self._name = name
         self._attr_name = "Thermal Comfort Index"
         self._attr_native_unit_of_measurement = UnitOfTemperature.CELSIUS
         self._attr_device_class = SensorDeviceClass.TEMPERATURE
         self._attr_state_class = SensorStateClass.MEASUREMENT
         self._attr_entity_category = EntityCategory.DIAGNOSTIC
-        self._attr_unique_id = f"{DOMAIN}_{name}"
+        self._attr_unique_id = f"{DOMAIN}_{self._name}"
         self._state = None
 
     @property
