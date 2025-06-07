@@ -1,7 +1,8 @@
 import logging
-from homeassistant.components.sensor import SensorEntity
-from homeassistant.const import TEMP_CELSIUS
+from homeassistant.components.sensor import SensorEntity, SensorDeviceClass, SensorStateClass
+from homeassistant.const import UnitOfTemperature
 from homeassistant.helpers.entity import EntityCategory
+from .const import DOMAIN
 from .comfort import calculate_thermal_comfort
 
 _LOGGER = logging.getLogger(__name__)
