@@ -3,7 +3,7 @@
   "name": "Comfort Tool",
   "version": "1.0.0",
   "documentation": "https://github.com/1iverea9er/Indoor-Thermal-Comfort",
-  "requirements": [],
+  "requirements": ["pythermalcomfort==2.10.0"],
   "dependencies": [],
   "codeowners": ["@1iverea9er"],
   "config_flow": true
