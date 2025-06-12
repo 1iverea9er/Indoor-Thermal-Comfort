@@ -27,7 +27,7 @@ def between(x: float, left: float, right: float) -> bool:
     """Проверка, находится ли x в пределах [left, right]."""
     return left <= x <= right
 
-def calculate_thermal_comfort(ta, tr, va, rh, clo, met):
+def calculate_thermal_comfort(ta, tr, va, rh, clo, met, wme=0, body_position="standing"):
     _LOGGER.debug(
         "Calculating thermal comfort (with Pierce SET) using inputs: ta=%.2f, tr=%.2f, va=%.2f, rh=%.2f, clo=%.2f, met=%.2f",
         ta, tr, va, rh, clo, met
@@ -35,7 +35,7 @@ def calculate_thermal_comfort(ta, tr, va, rh, clo, met):
 
     res = {}
     try:
-        # Вызов точной модели Pierce SET
+        # Точный расчёт SET по модели Pierce
         set_result = pierce_set(
             ta=ta,
             tr=tr,
@@ -43,17 +43,21 @@ def calculate_thermal_comfort(ta, tr, va, rh, clo, met):
             rh=rh,
             met=met,
             clo=clo,
-            round_output=True
+            wme=wme,
+            round_output=True,
+            standard_effective_temperature_mode=True,
+            posture_angle=90,
+            body_position=body_position
         )
 
         set_temp = set_result["set"]
 
-        # Упрощённая оценка PMV для классификации состояния — можно заменить на точную модель PMV, если будет нужно
+        # Упрощённая оценка PMV
         pmv = 0.303 * pow(2.718, -0.036 * met) + 0.028 * (met - clo) * (ta - 22)
         pmv = max(-3, min(3, pmv))
         ppd = max(5, min(100, 100 - 95 * pow(2.718, (-0.03353 * pmv ** 4 - 0.2179 * pmv ** 2))))
 
-        # Оценка теплового состояния по шкале PMV
+        # Классификация теплового состояния по шкале PMV
         if pmv < -2.5:
             ts = "Very Cold"
         elif pmv < -1.5:
@@ -69,18 +73,19 @@ def calculate_thermal_comfort(ta, tr, va, rh, clo, met):
         else:
             ts = "Very Hot"
 
-        # Можно при желании добавить CE через повторный вызов функции с calculate_ce=True
-        ce_result = pierce_set(
-            ta=ta,
-            tr=tr,
-            vel=va,
-            rh=rh,
-            met=met,
-            clo=clo,
-            round_output=True,
-            calculate_ce=True
+        # Точный расчёт Cooling Effect
+        ce = round(
+            cooling_effect(
+                ta=ta,
+                tr=tr,
+                vel=va,
+                rh=rh,
+                met=met,
+                clo=clo,
+                wme=wme,
+                body_position=body_position
+            ), 2
         )
-        ce = round(set_temp - ce_result["set"], 2)
 
         res = {
             "pmv": round(pmv, 2),
