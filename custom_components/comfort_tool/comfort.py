@@ -121,6 +121,8 @@ def cooling_effect(ta, tr, vel, rh, met, clo, body_position="standing"):
         clo=clo,
         wme=0,
         round_output=False,
+        calculate_ce=True,
+        max_skin_blood_flow=90,
         body_position=body_position
     )["set"]
 
@@ -135,6 +137,8 @@ def cooling_effect(ta, tr, vel, rh, met, clo, body_position="standing"):
             clo=clo,
             wme=0,
             round_output=False,
+            calculate_ce=True,
+            max_skin_blood_flow=90,
             body_position=body_position
         )["set"]
         return set_ref - set_still
