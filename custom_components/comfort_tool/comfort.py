@@ -56,20 +56,7 @@ def calculate_thermal_comfort(ta, tr, va, rh, clo, met, wme=0, body_position="st
         ppd = max(5, min(100, 100 - 95 * pow(2.718, (-0.03353 * pmv ** 4 - 0.2179 * pmv ** 2))))
 
         # Классификация по шкале PMV
-        if pmv < -2.5:
-            ts = "Very Cold"
-        elif pmv < -1.5:
-            ts = "Cold"
-        elif pmv < -0.5:
-            ts = "Cool"
-        elif pmv < 0.5:
-            ts = "Neutral"
-        elif pmv < 1.5:
-            ts = "Warm"
-        elif pmv < 2.5:
-            ts = "Hot"
-        else:
-            ts = "Very Hot"
+        ts = util.get_sensation(pmv)
 
         # Точный расчёт Cooling Effect (CE)
         ce = cooling_effect(
