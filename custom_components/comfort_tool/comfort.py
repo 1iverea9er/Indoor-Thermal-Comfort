@@ -141,44 +141,15 @@ def cooling_effect(ta, tr, vel, rh, met, clo, body_position="standing"):
 
     # Метод секущих
     try:
-        ce = _secant_method(fn, ce_l, ce_r, eps)
+        ce = util.secant(fn, ce_l, ce_r, eps)
     except ValueError:
         # Если секущая не сработала — используем метод бисекции
-        ce = _bisect_method(fn, ce_l, ce_r, eps)
+        ce = util.bisect(fn, ce_l, ce_r, eps)
 
     return round(max(0.0, ce), 2)
 
 
-# Вспомогательные численные методы
-def secant(f, x0, x1, tol=1e-6, max_iter=100):
-    for _ in range(max_iter):
-        fx0 = f(x0)
-        fx1 = f(x1)
-        if abs(fx1 - fx0) < 1e-12:
-            return None
-        x2 = x1 - fx1 * (x1 - x0) / (fx1 - fx0)
-        if abs(x2 - x1) < tol:
-            return x2
-        x0, x1 = x1, x2
-    return None
 
-def bisect(f, a, b, tol=1e-6, max_iter=100):
-    fa = f(a)
-    fb = f(b)
-    if fa * fb > 0:
-        return None
-    for _ in range(max_iter):
-        c = (a + b) / 2.0
-        fc = f(c)
-        if abs(fc) < tol or (b - a) / 2 < tol:
-            return c
-        if fc * fa < 0:
-            b = c
-            fb = fc
-        else:
-            a = c
-            fa = fc
-    return (a + b) / 2.0
 
 
 
