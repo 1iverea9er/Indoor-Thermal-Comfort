@@ -6,13 +6,7 @@ from .const import DOMAIN
 
 SENSOR_SELECTOR = selector({
     "entity": {
-        "domain": ["sensor"]
-    }
-})
-
-NUMBER_SELECTOR = selector({
-    "entity": {
-        "domain": ["input_number"]
+        "domain": ["sensor", "input_number"]
     }
 })
 
@@ -21,8 +15,8 @@ CONFIG_SCHEMA = vol.Schema({
     vol.Required("tr"): SENSOR_SELECTOR,
     vol.Required("va"): SENSOR_SELECTOR,
     vol.Required("rh"): SENSOR_SELECTOR,
-    vol.Required("clo"): NUMBER_SELECTOR,
-    vol.Required("met"): NUMBER_SELECTOR,
+    vol.Required("clo"): SENSOR_SELECTOR,
+    vol.Required("met"): SENSOR_SELECTOR,
 })
 
 class ComfortToolConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
@@ -30,7 +24,7 @@ class ComfortToolConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     async def async_step_user(self, user_input=None):
         if user_input is not None:
-            return self.async_create_entry(title="Comf", data=user_input)
+            return self.async_create_entry(title="Comfort Tool", data=user_input)
 
         return self.async_show_form(step_id="user", data_schema=CONFIG_SCHEMA)
 
@@ -56,9 +50,9 @@ class ComfortToolOptionsFlowHandler(config_entries.OptionsFlow):
                 vol.Required("tr", default=options.get("tr", "")): SENSOR_SELECTOR,
                 vol.Required("va", default=options.get("va", "")): SENSOR_SELECTOR,
                 vol.Required("rh", default=options.get("rh", "")): SENSOR_SELECTOR,
-                vol.Required("clo", default=options.get("clo", "")): NUMBER_SELECTOR,
-                vol.Required("met", default=options.get("met", "")): NUMBER_SELECTOR,
-            }),
+                vol.Required("clo", default=options.get("clo", "")): SENSOR_SELECTOR,
+                vol.Required("met", default=options.get("met", "")): SENSOR_SELECTOR,
+            })
         )
 
 async def async_get_options_flow(config_entry):
