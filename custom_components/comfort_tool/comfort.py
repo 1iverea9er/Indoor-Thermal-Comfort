@@ -43,21 +43,20 @@ def calculate_thermal_comfort(ta, tr, va, rh, clo, met, wme=0, body_position="st
             rh=rh,
             met=met,
             clo=clo,
-            wme=wme,
+            wme=0,
             round_output=True,
-            standard_effective_temperature_mode=True,
             posture_angle=90,
             body_position=body_position
         )
 
         set_temp = set_result["set"]
 
-        # Упрощённая оценка PMV
+        # Упрощённая эвристическая оценка PMV и PPD
         pmv = 0.303 * pow(2.718, -0.036 * met) + 0.028 * (met - clo) * (ta - 22)
         pmv = max(-3, min(3, pmv))
         ppd = max(5, min(100, 100 - 95 * pow(2.718, (-0.03353 * pmv ** 4 - 0.2179 * pmv ** 2))))
 
-        # Классификация теплового состояния по шкале PMV
+        # Классификация по шкале PMV
         if pmv < -2.5:
             ts = "Very Cold"
         elif pmv < -1.5:
@@ -73,18 +72,16 @@ def calculate_thermal_comfort(ta, tr, va, rh, clo, met, wme=0, body_position="st
         else:
             ts = "Very Hot"
 
-        # Точный расчёт Cooling Effect
-        ce = round(
-            cooling_effect(
-                ta=ta,
-                tr=tr,
-                vel=va,
-                rh=rh,
-                met=met,
-                clo=clo,
-                wme=wme,
-                body_position=body_position
-            ), 2
+        # Точный расчёт Cooling Effect (CE)
+        ce = cooling_effect(
+            ta=ta,
+            tr=tr,
+            vel=va,
+            rh=rh,
+            met=met,
+            clo=clo,
+            posture_angle=90,
+            body_position=body_position
         )
 
         res = {
