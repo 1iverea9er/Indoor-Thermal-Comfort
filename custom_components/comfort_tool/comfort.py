@@ -100,6 +100,94 @@ def calculate_thermal_comfort(ta, tr, va, rh, clo, met):
 
 
 
+def cooling_effect(ta, tr, vel, rh, met, clo, wme, body_position="standing"):
+    """
+    Расчет охлаждающего эффекта (Cooling Effect) по модели Pierce SET.
+    
+    :param ta: Температура воздуха (°C)
+    :param tr: Температура излучения (°C)
+    :param vel: Скорость воздуха (м/с)
+    :param rh: Относительная влажность (%)
+    :param met: Метаболизм (met)
+    :param clo: Одежда (clo)
+    :param wme: Внешняя работа (Вт/м²)
+    :param body_position: Положение тела: 'sitting' или 'standing'
+    :return: Cooling Effect (°C)
+    """
+    ce_l = 0.0
+    ce_r = 40.0
+    eps = 0.001
+
+    if vel <= 0.1:
+        return 0.0
+
+    set_ref = pierce_set(
+        ta, tr, vel, rh, met, clo, wme,
+        standard_effective_temperature_mode=True,
+        calculate_ce=False,
+        posture_angle=90,
+        body_position=body_position
+    )["set"]
+
+    def fn(_ce):
+        set_still = pierce_set(
+            ta - _ce,
+            tr - _ce,
+            STILL_AIR_THRESHOLD,
+            rh,
+            met,
+            clo,
+            wme,
+            standard_effective_temperature_mode=True,
+            calculate_ce=False,
+            posture_angle=90,
+            body_position=body_position
+        )["set"]
+        return set_ref - set_still
+
+    # Численное решение методом секущих с подстраховкой бисекцией
+    ce = secant(fn, ce_l, ce_r, eps)
+
+    if ce is None or math.isnan(ce):
+        ce = bisect(fn, ce_l, ce_r, eps, max_iter=100)
+
+    return max(0.0, ce)
+
+
+# Вспомогательные численные методы
+def secant(f, x0, x1, tol=1e-6, max_iter=100):
+    for _ in range(max_iter):
+        fx0 = f(x0)
+        fx1 = f(x1)
+        if abs(fx1 - fx0) < 1e-12:
+            return None
+        x2 = x1 - fx1 * (x1 - x0) / (fx1 - fx0)
+        if abs(x2 - x1) < tol:
+            return x2
+        x0, x1 = x1, x2
+    return None
+
+def bisect(f, a, b, tol=1e-6, max_iter=100):
+    fa = f(a)
+    fb = f(b)
+    if fa * fb > 0:
+        return None
+    for _ in range(max_iter):
+        c = (a + b) / 2.0
+        fc = f(c)
+        if abs(fc) < tol or (b - a) / 2 < tol:
+            return c
+        if fc * fa < 0:
+            b = c
+            fb = fc
+        else:
+            a = c
+            fa = fc
+    return (a + b) / 2.0
+
+
+
+
 def pierce_set(
     ta,
     tr,
