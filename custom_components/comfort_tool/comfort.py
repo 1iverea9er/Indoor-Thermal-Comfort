@@ -5,6 +5,27 @@ from . import psychrometrics
 
 _LOGGER = logging.getLogger(__name__)
 
+def relative_air_speed(v: float, met: float) -> float:
+    """Корректировка скорости воздуха в зависимости от метаболизма."""
+    if met > 1:
+        return v + 0.3 * (met - 1)
+    return v
+
+
+def dynamic_clothing(clo: float, met: float) -> float:
+    """Динамическая корректировка одежды в зависимости от метаболизма."""
+    if met > 1.2:
+        return clo * (0.6 + 0.4 / met)
+    return clo
+
+
+STILL_AIR_THRESHOLD = 0.1  # m/s
+
+
+def between(x: float, left: float, right: float) -> bool:
+    """Проверка, находится ли x в пределах [left, right]."""
+    return left <= x <= right
+
 def calculate_thermal_comfort(ta, tr, va, rh, clo, met):
     _LOGGER.debug("Calculating (approximate) thermal comfort with inputs: ta=%.2f, tr=%.2f, va=%.2f, rh=%.2f, clo=%.2f, met=%.2f", ta, tr, va, rh, clo, met)
     res = {}
