@@ -105,58 +105,56 @@ def calculate_thermal_comfort(ta, tr, va, rh, clo, met, wme=0, body_position="st
 
 
 
-def cooling_effect(ta, tr, vel, rh, met, clo, wme, body_position="standing"):
+def cooling_effect(ta, tr, vel, rh, met, clo, posture_angle=90, body_position="standing"):
     """
-    Расчет охлаждающего эффекта (Cooling Effect) по модели Pierce SET.
-    
-    :param ta: Температура воздуха (°C)
-    :param tr: Температура излучения (°C)
-    :param vel: Скорость воздуха (м/с)
-    :param rh: Относительная влажность (%)
-    :param met: Метаболизм (met)
-    :param clo: Одежда (clo)
-    :param wme: Внешняя работа (Вт/м²)
-    :param body_position: Положение тела: 'sitting' или 'standing'
-    :return: Cooling Effect (°C)
+    Вычисляет эффект охлаждения (Cooling Effect, CE) — насколько бы пришлось понизить ta и tr,
+    чтобы при низкой скорости воздуха получить тот же SET, что и при текущей высокой скорости.
     """
-    ce_l = 0.0
-    ce_r = 40.0
-    eps = 0.001
+    ce_l = 0
+    ce_r = 40
+    eps = 0.001  # точность
 
     if vel <= 0.1:
         return 0.0
 
-    set_ref = pierce_set(
-        ta, tr, vel, rh, met, clo, wme,
-        standard_effective_temperature_mode=True,
-        calculate_ce=False,
-        posture_angle=90,
+    # SET при текущей скорости воздуха
+    set_high_speed = pierce_set(
+        ta=ta,
+        tr=tr,
+        vel=vel,
+        rh=rh,
+        met=met,
+        clo=clo,
+        wme=0,
+        round_output=False,
+        posture_angle=posture_angle,
         body_position=body_position
     )["set"]
 
+    # Целевая функция: разница SET при высокой и низкой скорости
     def fn(_ce):
-        set_still = pierce_set(
-            ta - _ce,
-            tr - _ce,
-            STILL_AIR_THRESHOLD,
-            rh,
-            met,
-            clo,
-            wme,
-            standard_effective_temperature_mode=True,
-            calculate_ce=False,
-            posture_angle=90,
+        set_still_air = pierce_set(
+            ta=ta - _ce,
+            tr=tr - _ce,
+            vel=0.1,  # still air threshold
+            rh=rh,
+            met=met,
+            clo=clo,
+            wme=0,
+            round_output=False,
+            posture_angle=posture_angle,
             body_position=body_position
         )["set"]
-        return set_ref - set_still
+        return set_high_speed - set_still_air
 
-    # Численное решение методом секущих с подстраховкой бисекцией
-    ce = secant(fn, ce_l, ce_r, eps)
+    # Поиск CE численным методом
+    ce = secant_method(fn, ce_l, ce_r, eps)
 
+    # Если метод секущих не дал результата — используем бисекцию
     if ce is None or math.isnan(ce):
-        ce = bisect(fn, ce_l, ce_r, eps, max_iter=100)
+        ce = bisect_method(fn, ce_l, ce_r, eps)
 
-    return max(0.0, ce)
+    return max(0.0, round(ce, 2))
 
 
 # Вспомогательные численные методы
