@@ -141,10 +141,10 @@ def cooling_effect(ta, tr, vel, rh, met, clo, body_position="standing"):
 
     # Метод секущих
     try:
-        ce = util.secant(fn, ce_l, ce_r, eps)
+        ce = util.secant(ce_l, ce_r, fn, eps)
     except ValueError:
         # Если секущая не сработала — используем метод бисекции
-        ce = util.bisect(fn, ce_l, ce_r, eps)
+        ce = util.bisect(ce_l, ce_r, fn, eps, 0)
 
     return round(max(0.0, ce), 2)
 
