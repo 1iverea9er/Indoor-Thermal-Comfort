@@ -1,5 +1,5 @@
 import math
-import util
+from . import util
 
 PROP = {
     "Patm": 101325.0,
