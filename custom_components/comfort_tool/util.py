@@ -81,7 +81,7 @@ def CtoF(x):
 def FtoC(x):
     return (x - 32) * 5 / 9
 
-def find_saturated_vapor_pressure_torr(T):
+def FindSaturatedVaporPressureTorr(T):
     """
     Calculates saturated vapor pressure (in Torr) at temperature T (°C)
     Based on equation: exp(18.6686 - 4030.183 / (T + 235.0))
