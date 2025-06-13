@@ -26,7 +26,7 @@ STILL_AIR_THRESHOLD = 0.1  # m/s
 
 def calculate_thermal_comfort(ta, tr, va, rh, clo, met, wme=0, body_position="standing"):
     _LOGGER.debug(
-        "Calculating thermal comfort (with Pierce SET) using inputs: ta=%.2f, tr=%.2f, va=%.2f, rh=%.2f, clo=%.2f, met=%.2f",
+        "Calculating thermal comfort (with Pierce SET and PMV/PPD) using inputs: ta=%.2f, tr=%.2f, va=%.2f, rh=%.2f, clo=%.2f, met=%.2f",
         ta, tr, va, rh, clo, met
     )
 
@@ -40,20 +40,29 @@ def calculate_thermal_comfort(ta, tr, va, rh, clo, met, wme=0, body_position="st
             rh=rh,
             met=met,
             clo=clo,
-            wme=0,
+            wme=wme,
             round_output=True,
             body_position=body_position
         )
 
         set_temp = set_result["set"]
 
-        # Упрощённая эвристическая оценка PMV и PPD
-        pmv = 0.303 * pow(2.718, -0.036 * met) + 0.028 * (met - clo) * (ta - 22)
-        pmv = max(-3, min(3, pmv))
-        ppd = max(5, min(100, 100 - 95 * pow(2.718, (-0.03353 * pmv ** 4 - 0.2179 * pmv ** 2))))
+        # Точный расчёт PMV и PPD по модели Fanger
+        pmv_result = pmv(
+            ta=ta,
+            tr=tr,
+            vel=va,
+            rh=rh,
+            met=met,
+            clo=clo,
+            wme=wme
+        )
+
+        pmv_val = pmv_result["pmv"]
+        ppd_val = pmv_result["ppd"]
 
         # Классификация по шкале PMV
-        ts = util.get_sensation(pmv)
+        ts = util.get_sensation(pmv_val)
 
         # Точный расчёт Cooling Effect (CE)
         ce = cooling_effect(
@@ -67,8 +76,8 @@ def calculate_thermal_comfort(ta, tr, va, rh, clo, met, wme=0, body_position="st
         )
 
         res = {
-            "pmv": round(pmv, 2),
-            "ppd": round(ppd, 1),
+            "pmv": round(pmv_val, 2),
+            "ppd": round(ppd_val, 1),
             "set": set_temp,
             "ce": ce,
             "ts": ts
