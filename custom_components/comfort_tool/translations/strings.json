@@ -1,0 +1,11 @@
+{
+  "title": "Indoor Thermal Comfort",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Indoor Thermal Comfort Setup",
+        "description": "Configure the Indoor Thermal Comfort integration."
+      }
+    }
+  }
+}
