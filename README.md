@@ -16,17 +16,14 @@ This integration calculates and provides the following thermal comfort metrics a
 
 This integration requires the following existing entities to work:
 
-### Required Sensors:
+### Required Sensors / Input Numbers:
 
 - `ta`: Air temperature sensor (°C)
 - `tr`: Mean radiant temperature sensor (°C)
 - `va`: Air velocity sensor (m/s)
 - `rh`: Relative humidity sensor (%)
-
-### Required Input Numbers:
-
-- `clo`: Clothing insulation level (`input_number`, unit: clo)
-- `met`: Metabolic rate (`input_number`, unit: met)
+- `clo`: Clothing insulation level (clo)
+- `met`: Metabolic rate (met)
 
 You will select these entities via the UI during setup.
 
