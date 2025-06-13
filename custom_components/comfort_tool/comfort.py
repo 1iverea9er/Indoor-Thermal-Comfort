@@ -7,14 +7,22 @@ from . import psychrometrics as psy
 _LOGGER = logging.getLogger(__name__)
 
 def relative_air_speed(v: float, met: float) -> float:
-    """Корректировка скорости воздуха в зависимости от метаболизма."""
+    """Adjust air speed based on metabolic rate.
+
+    When the metabolic rate exceeds 1.0 met, the relative air speed is increased
+    to account for increased convection due to body movement.
+    """
     if met > 1:
         return v + 0.3 * (met - 1)
     return v
 
 
 def dynamic_clothing(clo: float, met: float) -> float:
-    """Динамическая корректировка одежды в зависимости от метаболизма."""
+    """Adjust clothing insulation dynamically based on metabolic rate.
+
+    At higher activity levels (met > 1.2), the effective clothing insulation is reduced
+    to reflect heat loss due to increased movement and ventilation.
+    """
     if met > 1.2:
         return clo * (0.6 + 0.4 / met)
     return clo
@@ -53,9 +61,9 @@ def calculate_thermal_comfort(ta, tr, va, rh, clo, met, wme=0):
 
         res = {
             "pmv": round(pmv_val, 2),
-            "ppd": round(ppd_val, 1),
+            "ppd": round(ppd_val, 0),
             "set": round(set_temp, 1),
-            "ce": ce,
+            "ce": round(ce, 1),
             "ts": ts
         }
 
