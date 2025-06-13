@@ -1,4 +1,4 @@
-# Comfort Tool Sensors for Home Assistant
+# Indoor Thermal Comfort Tool for Home Assistant
 
 This is a custom [Home Assistant](https://www.home-assistant.io/) integration that provides calculated thermal comfort indicators using the [CBE Comfort Tool](https://comfort.cbe.berkeley.edu/) logic and implements the provisions of ANSI/ASHRAE Standard 55-2023.
 
