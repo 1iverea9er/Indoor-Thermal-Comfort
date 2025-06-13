@@ -6,5 +6,6 @@
   "requirements": [],
   "dependencies": [],
   "codeowners": ["@1iverea9er"],
-  "config_flow": true
+  "config_flow": true,
+  "logo": "logo.png"
 }
