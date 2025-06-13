@@ -1,6 +1,6 @@
 # Comfort Tool Sensors for Home Assistant
 
-This is a custom [Home Assistant](https://www.home-assistant.io/) integration that provides calculated thermal comfort indicators using the [CBE Comfort Tool](https://comfort.cbe.berkeley.edu/) library.
+This is a custom [Home Assistant](https://www.home-assistant.io/) integration that provides calculated thermal comfort indicators using the [CBE Comfort Tool](https://comfort.cbe.berkeley.edu/) logic.
 
 ## 🧊 Features
 
