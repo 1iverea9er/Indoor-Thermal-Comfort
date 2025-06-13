@@ -7,4 +7,5 @@
   "dependencies": [],
   "codeowners": ["@1iverea9er"],
   "config_flow": true
+  "logo": "custom_components/comfort_tool/logo.png"
 }
