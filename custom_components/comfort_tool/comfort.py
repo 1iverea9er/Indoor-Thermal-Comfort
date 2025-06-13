@@ -26,14 +26,14 @@ STILL_AIR_THRESHOLD = 0.1  # m/s
 
 def calculate_thermal_comfort(ta, tr, va, rh, clo, met, wme=0, body_position="standing"):
     _LOGGER.debug(
-        "Calculating thermal comfort (with Pierce SET and PMV/PPD) using inputs: ta=%.2f, tr=%.2f, va=%.2f, rh=%.2f, clo=%.2f, met=%.2f",
+        "Calculating thermal comfort using pmv_elevated_airspeed with inputs: ta=%.2f, tr=%.2f, va=%.2f, rh=%.2f, clo=%.2f, met=%.2f",
         ta, tr, va, rh, clo, met
     )
 
     res = {}
     try:
-        # Точный расчёт SET по модели Pierce
-        set_result = pierce_set(
+        # Full comfort model: includes PMV, PPD, CE, SET based on elevated airspeed logic
+        comfort = pmv_elevated_airspeed(
             ta=ta,
             tr=tr,
             vel=va,
@@ -41,44 +41,21 @@ def calculate_thermal_comfort(ta, tr, va, rh, clo, met, wme=0, body_position="st
             met=met,
             clo=clo,
             wme=wme,
-            round_output=True,
             body_position=body_position
         )
 
-        set_temp = set_result["set"]
+        pmv_val = comfort["pmv"]
+        ppd_val = comfort["ppd"]
+        set_temp = comfort["set"]
+        ce = comfort["cooling_effect"]
 
-        # Точный расчёт PMV и PPD по модели Fanger
-        pmv_result = pmv(
-            ta=ta,
-            tr=tr,
-            vel=va,
-            rh=rh,
-            met=met,
-            clo=clo,
-            wme=wme
-        )
-
-        pmv_val = pmv_result["pmv"]
-        ppd_val = pmv_result["ppd"]
-
-        # Классификация по шкале PMV
+        # Determine thermal sensation category
         ts = util.get_sensation(pmv_val)
-
-        # Точный расчёт Cooling Effect (CE)
-        ce = cooling_effect(
-            ta=ta,
-            tr=tr,
-            vel=va,
-            rh=rh,
-            met=met,
-            clo=clo,
-            body_position=body_position
-        )
 
         res = {
             "pmv": round(pmv_val, 2),
             "ppd": round(ppd_val, 1),
-            "set": set_temp,
+            "set": round(set_temp, 1),
             "ce": ce,
             "ts": ts
         }
@@ -90,6 +67,66 @@ def calculate_thermal_comfort(ta, tr, va, rh, clo, met, wme=0, body_position="st
         res = {k: None for k in ["pmv", "ppd", "set", "ce", "ts"]}
 
     return res
+
+
+def pmv_elevated_airspeed(ta, tr, vel, rh, met, clo, wme=0):
+    """
+    Returns comfort parameters accounting for elevated air speed effects.
+
+    Parameters:
+    - ta: air temperature (°C)
+    - tr: mean radiant temperature (°C)
+    - vel: air speed (m/s)
+    - rh: relative humidity (%)
+    - met: metabolic rate (met)
+    - clo: clothing insulation (clo)
+    - wme: external work (met), default is 0
+
+    Returns:
+    - dict with the following keys:
+        "pmv": Predicted Mean Vote,
+        "ppd": Predicted Percentage Dissatisfied,
+        "set": Standard Effective Temperature,
+        "ta_adj": adjusted air temperature after cooling effect,
+        "tr_adj": adjusted mean radiant temperature after cooling effect,
+        "cooling_effect": calculated cooling effect (°C)
+    """
+    result = {}
+
+    # Compute relative air speed based on metabolic rate
+    rel_vel = relative_air_speed(vel, met)
+
+    # Compute dynamic clothing insulation
+    dyn_clo = dynamic_clothing(clo, met)
+
+    # Compute cooling effect from elevated air speed
+    ce = cooling_effect(ta, tr, rel_vel, rh, met, dyn_clo)
+
+    # Use adjusted or original temperatures depending on velocity and cooling effect
+    if rel_vel <= 0.1 or ce == 0:
+        # No significant cooling, use original conditions
+        pmv_result = pmv(ta, tr, rel_vel, rh, met, dyn_clo, wme)
+        ce = 0
+        ta_adj = ta
+        tr_adj = tr
+    else:
+        # Adjust temperatures for elevated air speed cooling effect
+        pmv_result = pmv(ta - ce, tr - ce, STILL_AIR_THRESHOLD, rh, met, dyn_clo, wme)
+        ta_adj = ta - ce
+        tr_adj = tr - ce
+
+    # Compute accurate SET using the original input parameters
+    set_val = pierce_set(ta, tr, vel, rh, met, clo, wme)["set"]
+
+    # Return all comfort parameters
+    result["pmv"] = pmv_result["pmv"]
+    result["ppd"] = pmv_result["ppd"]
+    result["set"] = set_val
+    result["ta_adj"] = ta_adj
+    result["tr_adj"] = tr_adj
+    result["cooling_effect"] = ce
+
+    return result
 
 
 
@@ -173,16 +210,17 @@ def pmv(ta, tr, vel, rh, met, clo, wme=0):
 
 def cooling_effect(ta, tr, vel, rh, met, clo, body_position="standing"):
     """
-    Вычисляет Cooling Effect (CE) — разницу в SET между текущими условиями и условиями со "спокойным воздухом".
+    Calculates the Cooling Effect (CE) — the difference in SET between current conditions
+    and still air conditions (velocity = 0.1 m/s).
     """
     if vel <= 0.1:
         return 0.0
 
     ce_l = 0.0
     ce_r = 40.0
-    eps = 0.001  # точность
+    eps = 0.001  # accuracy threshold
 
-    # SET при текущей скорости воздуха
+    # Reference SET at current air speed
     set_ref = pierce_set(
         ta=ta,
         tr=tr,
@@ -197,7 +235,7 @@ def cooling_effect(ta, tr, vel, rh, met, clo, body_position="standing"):
         body_position=body_position
     )["set"]
 
-    # Целевая функция: разница в SET при сниженной температуре и спокойном воздухе
+    # Target function: difference in SET with reduced temperature and still air
     def fn(ce):
         set_still = pierce_set(
             ta=ta - ce,
@@ -214,11 +252,11 @@ def cooling_effect(ta, tr, vel, rh, met, clo, body_position="standing"):
         )["set"]
         return set_ref - set_still
 
-    # Метод секущих
+    # Use secant method to solve for CE
     try:
         ce = util.secant(ce_l, ce_r, fn, eps)
     except ValueError:
-        # Если секущая не сработала — используем метод бисекции
+        # If secant method fails, fall back to bisection method
         ce = util.bisect(ce_l, ce_r, fn, eps, 0)
 
     return round(max(0.0, ce), 2)
