@@ -24,7 +24,7 @@ STILL_AIR_THRESHOLD = 0.1  # m/s
 
 
 
-def calculate_thermal_comfort(ta, tr, va, rh, clo, met, wme=0, body_position="standing"):
+def calculate_thermal_comfort(ta, tr, va, rh, clo, met, wme=0):
     _LOGGER.debug(
         "Calculating thermal comfort using pmv_elevated_airspeed with inputs: ta=%.2f, tr=%.2f, va=%.2f, rh=%.2f, clo=%.2f, met=%.2f",
         ta, tr, va, rh, clo, met
@@ -40,8 +40,7 @@ def calculate_thermal_comfort(ta, tr, va, rh, clo, met, wme=0, body_position="st
             rh=rh,
             met=met,
             clo=clo,
-            wme=wme,
-            body_position=body_position
+            wme=wme
         )
 
         pmv_val = comfort["pmv"]
