@@ -2,16 +2,16 @@
   "config": {
     "step": {
       "user": {
-        "title": "Comfort Tool Sensors Setup",
+        "title": "Indoor Thermal Comfort Setup",
         "description": "Select existing sensors and input parameters.",
         "data": {
           "name": "Integration name",
-          "ta": "Air temperature sensor (ta)",
-          "tr": "Mean radiant temperature sensor (tr)",
-          "va": "Air velocity sensor (va)",
-          "rh": "Relative humidity sensor (rh)",
-          "clo": "Clothing level (clo, input_number)",
-          "met": "Metabolic rate (met, input_number)"
+          "ta": "Average air temperature (Ta)",
+          "tr": "Mean radiant temperature (MRT)",
+          "va": "Air velocity (Va)",
+          "rh": "Relative humidity (RH)",
+          "clo": "Clothing level (clo)",
+          "met": "Metabolic rate (met)"
         }
       }
     },
