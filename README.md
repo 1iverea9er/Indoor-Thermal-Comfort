@@ -53,7 +53,7 @@ You will select these entities via the UI during setup.
 
 ## 🧪 Notes
 
-- Internally uses the [comfort_tool](https://github.com/CenterForTheBuiltEnvironment/comfort_tool) Python library by the Center for the Built Environment (UC Berkeley).
+- Internally uses the [comfort_tool](https://github.com/CenterForTheBuiltEnvironment/comfort_tool) Python implementation by the Center for the Built Environment (UC Berkeley).
 - All sensors update automatically when any of the input values change.
 
 ## 🧾 License
