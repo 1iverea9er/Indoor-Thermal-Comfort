@@ -24,13 +24,13 @@ async def async_setup_entry(hass, entry, async_add_entities):
         entities.append(ComfortSensor(
             hass, entry.entry_id,
             ta, tr, va, rh, clo, met,
-            metric
+            metric, prefix
         ))
 
     async_add_entities(entities, True)
 
 class ComfortSensor(SensorEntity):
-    def __init__(self, hass, entry_id, ta, tr, va, rh, clo, met, metric):
+    def __init__(self, hass, entry_id, ta, tr, va, rh, clo, met, metric, prefix):
         self._hass = hass
         self._metric = metric
         self._ta = ta
@@ -40,7 +40,6 @@ class ComfortSensor(SensorEntity):
         self._clo = clo
         self._met = met
 
-        
         self._attr_name = f"{prefix} {metric.upper()}"
         self._attr_unique_id = f"{DOMAIN}_{entry_id}_{metric}"
         self._attr_entity_category = EntityCategory.DIAGNOSTIC
