@@ -54,24 +54,6 @@ def secant(a, b, fn, epsilon):
     return float('nan')
 
 
-def get_sensation(pmv):
-    """
-    Returns thermal sensation description based on PMV value.
-    """
-    if pmv < -2.5:
-        return "Cold"
-    elif pmv < -1.5:
-        return "Cool"
-    elif pmv < -0.5:
-        return "Slightly Cool"
-    elif pmv < 0.5:
-        return "Neutral"
-    elif pmv < 1.5:
-        return "Slightly Warm"
-    elif pmv < 2.5:
-        return "Warm"
-    else:
-        return "Hot"
 
 
 def get_sensation_by_class(pmv: float, comfort_class: str = "B") -> str:
