@@ -11,6 +11,7 @@ SENSOR_SELECTOR = selector({
 })
 
 CONFIG_SCHEMA = vol.Schema({
+    vol.Optional("name"): str,
     vol.Required("ta"): SENSOR_SELECTOR,
     vol.Optional("tr"): SENSOR_SELECTOR,
     vol.Optional("va"): SENSOR_SELECTOR,
@@ -46,6 +47,7 @@ class ComfortToolOptionsFlowHandler(config_entries.OptionsFlow):
         return self.async_show_form(
             step_id="init",
             data_schema=vol.Schema({
+                vol.Optional("name", default=options.get("name", self.config_entry.title)): str,
                 vol.Required("ta", default=options.get("ta", "")): SENSOR_SELECTOR,
                 vol.Optional("tr", default=options.get("tr", "")): SENSOR_SELECTOR,
                 vol.Optional("va", default=options.get("va", "")): SENSOR_SELECTOR,
