@@ -46,7 +46,7 @@ You will select these entities via the UI during setup.
 
 ### Manual Installation
 
-1. Copy the contents of this repository into: `custom_components`
+1. Copy the contents of this repository into: `custom_components/`
 2. Restart Home Assistant.
 3. Add the integration via UI as described above.
 
