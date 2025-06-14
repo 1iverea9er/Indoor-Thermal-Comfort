@@ -17,6 +17,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
     met = config["met"]
     tr = config.get("tr")  # Optional
     va = config.get("va")  # Optional
+    prefix = config.get("name", "Comfort")
 
     entities = []
     for metric in ["pmv", "ppd", "set", "ce", "ts"]:
@@ -39,7 +40,6 @@ class ComfortSensor(SensorEntity):
         self._clo = clo
         self._met = met
 
-        prefix = config.get("name", "Comfort")
         
         self._attr_name = f"{prefix} {metric.upper()}"
         self._attr_unique_id = f"{DOMAIN}_{entry_id}_{metric}"
