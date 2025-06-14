@@ -39,7 +39,9 @@ class ComfortSensor(SensorEntity):
         self._clo = clo
         self._met = met
 
-        self._attr_name = f"Comfort {metric.upper()}"
+        prefix = config.get("name", "Comfort")
+        
+        self._attr_name = f"{prefix} {metric.upper()}"
         self._attr_unique_id = f"{DOMAIN}_{entry_id}_{metric}"
         self._attr_entity_category = EntityCategory.DIAGNOSTIC
         self._attr_native_value = None
