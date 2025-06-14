@@ -42,7 +42,7 @@ You will select these entities via the UI during setup.
    with category: *Integration*.
 3. Install **Comfort Tool Sensors**.
 4. Restart Home Assistant.
-5. Add the integration via **Settings → Devices & Services → Add Integration** and search for **Comfort Tool Sensors**.
+5. Add the integration via **Settings → Devices & Services → Add Integration** and search for **Indoor Thermal Comfort**.
 
 ### Manual Installation
 
