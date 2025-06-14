@@ -74,6 +74,47 @@ def get_sensation(pmv):
         return "Hot"
 
 
+def get_sensation_by_class(pmv: float, comfort_class: str = "B") -> str:
+    """
+    Returns thermal sensation based on PMV value and thermal environment class (A, B, C),
+    using adjusted sensation ranges according to ISO 7730:2005 Appendix A.
+
+    Parameters:
+        pmv (float): Predicted Mean Vote value.
+        comfort_class (str): Thermal comfort class: "A", "B", or "C".
+
+    Returns:
+        str: Thermal sensation description.
+    """
+    # Define half-range of neutrality for each class
+    class_ranges = {
+        "A": 0.2,
+        "B": 0.5,
+        "C": 0.7
+    }
+
+    # Validate and get the neutral range for the class
+    neutral_range = class_ranges.get(comfort_class.upper(), 0.5)  # default to class B if invalid
+
+    # Define boundaries based on neutral_range as a scaling factor
+    # e.g., for class A (±0.2): boundaries = ±0.2, ±2×0.2, ±3×0.2, etc.
+    thresholds = [
+        (-3 * neutral_range, "Cold"),
+        (-2 * neutral_range, "Cool"),
+        (-1 * neutral_range, "Slightly Cool"),
+        (neutral_range, "Neutral"),
+        (2 * neutral_range, "Slightly Warm"),
+        (3 * neutral_range, "Warm"),
+    ]
+
+    # Classify PMV based on the thresholds
+    for threshold, label in thresholds:
+        if pmv < threshold:
+            return label
+
+    return "Hot"
+
+
 def CtoF(x):
     return (x * 9) / 5 + 32
 
