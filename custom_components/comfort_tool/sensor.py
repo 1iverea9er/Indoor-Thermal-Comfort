@@ -12,11 +12,11 @@ async def async_setup_entry(hass, entry, async_add_entities):
     config = entry.data
 
     ta = config["ta"]
-    tr = config["tr"]
-    va = config["va"]
     rh = config["rh"]
     clo = config["clo"]
     met = config["met"]
+    tr = config.get("tr")  # Optional
+    va = config.get("va")  # Optional
 
     entities = []
     for metric in ["pmv", "ppd", "set", "ce", "ts"]:
@@ -57,13 +57,15 @@ class ComfortSensor(SensorEntity):
 
     async def async_update(self):
         ta = self._get(self._ta)
-        tr = self._get(self._tr)
-        va = self._get(self._va)
         rh = self._get(self._rh)
         clo = self._get(self._clo)
         met = self._get(self._met)
 
-        if any(x is None for x in [ta, tr, va, rh, clo, met]):
+        # Optional parameters
+        va = self._get(self._va) if self._va else 0.0
+        tr = self._get(self._tr) if self._tr else ta  # fallback to ta
+
+        if any(x is None for x in [ta, rh, clo, met]) or tr is None:
             self._attr_native_value = None
             return
 
