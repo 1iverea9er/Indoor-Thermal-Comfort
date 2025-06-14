@@ -26,7 +26,7 @@ This integration requires the following existing entities to work:
 ### Optional Sensors:
 
 - `tr`: Mean radiant temperature (°C)  
-  *Defaults to `ta` if not provided*
+  *Defaults to `ta` (i.e. `ta`=`tr`=`to`) if not provided*
 - `va`: Air velocity (m/s)  
   *Defaults to `0.0` m/s if not provided*
 
