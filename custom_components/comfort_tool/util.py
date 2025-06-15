@@ -113,3 +113,29 @@ def FindSaturatedVaporPressureTorr(T):
     :return: Saturated vapor pressure in Torr
     """
     return math.exp(18.6686 - 4030.183 / (T + 235.0))
+
+def operative_temperature(ta, tr, va):
+    """
+    Calculates the operative temperature using heat transfer coefficients.
+
+    Parameters:
+    - ta: air temperature (°C)
+    - tr: mean radiant temperature (°C)
+    - va: air speed (m/s)
+
+    Returns:
+    - to: operative temperature (°C)
+    """
+
+    # Fixed radiative heat transfer coefficient (typical indoor value)
+    hr = 4.7
+
+    # Convective heat transfer coefficient based on Mitchell's formula
+    hc = max(3.1, 8.3 * va ** 0.6)
+
+    # Operative temperature formula:
+    # weighted average of air temperature and radiant temperature
+    to = (hr * tr + hc * ta) / (hr + hc)
+
+    return to
+
