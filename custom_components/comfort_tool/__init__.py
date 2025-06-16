@@ -13,11 +13,11 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     _LOGGER.debug("Setting up entry: %s", entry.entry_id)
-    hass.async_create_task(
-        hass.config_entries.async_forward_entry_setup(entry, "sensor")
-    )
+    # Forward the config entry setup to the 'sensor' platform
+    await hass.config_entries.async_forward_entry_setups(entry, ["sensor"])
     return True
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     _LOGGER.debug("Unloading entry: %s", entry.entry_id)
     return await hass.config_entries.async_forward_entry_unload(entry, "sensor")
+
