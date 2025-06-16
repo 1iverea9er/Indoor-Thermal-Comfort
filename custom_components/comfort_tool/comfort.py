@@ -57,7 +57,7 @@ def calculate_thermal_comfort(ta, tr, va, rh, clo, met, wme=0):
         ce = comfort["cooling_effect"]
 
         # Determine thermal sensation category
-        ts = util.get_sensation_by_class(pmv_val, "B")
+        ts = get_sensation_by_class(pmv_val, "B")
 
         res = {
             "pmv": round(pmv_val, 2),
