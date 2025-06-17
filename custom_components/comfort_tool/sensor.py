@@ -45,12 +45,15 @@ class ComfortSensor(SensorEntity):
         self._attr_entity_category = EntityCategory.DIAGNOSTIC
         self._attr_native_value = None
 
-        if metric in ["pmv", "set", "ce"]:
+        if metric == "set" or metric == "ce":
             self._attr_native_unit_of_measurement = UnitOfTemperature.CELSIUS
         elif metric == "ppd":
             self._attr_native_unit_of_measurement = PERCENTAGE
+        elif metric == "pmv":
+            self._attr_native_unit_of_measurement = None  # PMV is unitless
         else:
             self._attr_native_unit_of_measurement = None
+
 
     @property
     def native_value(self):
