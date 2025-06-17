@@ -45,6 +45,15 @@ class ComfortSensor(SensorEntity):
         self._attr_entity_category = EntityCategory.DIAGNOSTIC
         self._attr_native_value = None
 
+        icon_map = {
+            "pmv": "mdi:scale-balance",
+            "ppd": "mdi:account-group-outline",
+            "set": "mdi:thermometer",
+            "ce": "mdi:snowflake-thermometer",
+            "ts": "mdi:meditation"
+        }
+        self._attr_icon = icon_map.get(metric)
+        
         if metric == "set" or metric == "ce":
             self._attr_native_unit_of_measurement = UnitOfTemperature.CELSIUS
         elif metric == "ppd":
