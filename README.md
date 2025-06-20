@@ -2,9 +2,6 @@
 
 This is a custom [Home Assistant](https://www.home-assistant.io/) HACS integration that provides calculated thermal comfort indicators using the [CBE Comfort Tool](https://comfort.cbe.berkeley.edu/) logic and implements the provisions of ANSI/ASHRAE Standard 55-2023.
 
-This integration is a Python reimplementation based on the original JavaScript version by the [Center for the Built Environment](https://github.com/CenterForTheBuiltEnvironment/comfort_tool).  
-The original project is licensed under the GNU GPLv2 license, and this adaptation is licensed under the same terms. See the [LICENSE](LICENSE) file for details.
-
 ---
 
 ## 🧊 Features
@@ -107,7 +104,8 @@ Apply a weighted combination of wall/window temperatures and solar heat gain est
 
 ## 🧾 License
 
-This project is licensed under the GNU General Public License v2.0.  
+This integration is a Python reimplementation based on the original JavaScript version by the [Center for the Built Environment](https://github.com/CenterForTheBuiltEnvironment/comfort_tool).  
+The original project is licensed under the GNU GPLv2 license, and this adaptation is licensed under the same terms. See the [LICENSE](LICENSE) file for details.
 See the [LICENSE](LICENSE) file for full license terms.
 
 ---
