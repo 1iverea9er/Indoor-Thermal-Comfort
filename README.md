@@ -2,6 +2,11 @@
 
 This is a custom [Home Assistant](https://www.home-assistant.io/) HACS integration that provides calculated thermal comfort indicators using the [CBE Comfort Tool](https://comfort.cbe.berkeley.edu/) logic and implements the provisions of ANSI/ASHRAE Standard 55-2023.
 
+This integration is a Python reimplementation based on the original JavaScript version by the [Center for the Built Environment](https://github.com/CenterForTheBuiltEnvironment/comfort_tool).  
+The original project is licensed under the GNU GPLv2 license, and this adaptation is licensed under the same terms. See the [LICENSE](LICENSE) file for details.
+
+---
+
 ## 🧊 Features
 
 This integration calculates and provides the following thermal comfort metrics as sensors:
@@ -11,6 +16,8 @@ This integration calculates and provides the following thermal comfort metrics a
 - **SET** (Standard Effective Temperature)
 - **CE** (Cooling Effect)
 - **Thermal Sensation** (qualitative value)
+
+---
 
 ## ⚙️ Configuration
 
@@ -32,6 +39,8 @@ This integration requires the following existing entities to work:
 
 You will select these entities via the UI during setup.
 
+---
+
 ## 📦 Installation
 
 ### Recommended: HACS
@@ -50,22 +59,31 @@ You will select these entities via the UI during setup.
 2. Restart Home Assistant.
 3. Add the integration via UI as described above.
 
+---
+
 ## 🔍 Example Use Cases
 
 - Use PMV and PPD in energy optimization automations.
 - Display SET and Thermal Sensation on dashboards.
 - Combine CE with cooling system logic.
 
+---
+
 ## 🧪 Notes
 
-- Internally uses the [comfort_tool](https://github.com/CenterForTheBuiltEnvironment/comfort_tool) Python implementation by the Center for the Built Environment (UC Berkeley).
+- Internally uses a Python adaptation of the [comfort_tool](https://github.com/CenterForTheBuiltEnvironment/comfort_tool) model by the Center for the Built Environment (UC Berkeley).
 - All sensors update automatically when any of the input values change.
+
+---
 
 ## 🧾 License
 
-This project is licensed under the MIT License. See [LICENSE](LICENSE) for more information.
+This project is licensed under the GNU General Public License v2.0.  
+See the [LICENSE](LICENSE) file for full license terms.
+
+---
 
 ## 🙏 Acknowledgements
 
-- [comfort_tool](https://github.com/CenterForTheBuiltEnvironment/comfort_tool) by CBE
+- [comfort_tool](https://github.com/CenterForTheBuiltEnvironment/comfort_tool) by the Center for the Built Environment (UC Berkeley)
 - Home Assistant community and HACS maintainers
