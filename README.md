@@ -66,8 +66,6 @@ Rooms with significant solar radiation
 
 To estimate tr more accurately:
 
-Use globe temperature sensors, or
-
 Apply a weighted combination of wall/window temperatures and solar heat gain estimates.
 
 ---
