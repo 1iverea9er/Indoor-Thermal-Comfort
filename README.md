@@ -23,21 +23,52 @@ This integration calculates and provides the following thermal comfort metrics a
 
 This integration requires the following existing entities to work:
 
-### Minimal required Sensors / Input Numbers:
+### Input Parameters (Sensors / Input Numbers):
 
-- `ta`: Air temperature (°C)
-- `rh`: Relative humidity (%)
-- `clo`: Clothing insulation level (clo)
-- `met`: Metabolic rate (met)
+| Parameter | Description                                                | Recommended Range                                       | Required / Optional            |
+| --------- | ---------------------------------------------------------- | ----------------------------------------------------------------- | ------------------------------ |
+| `ta`      | Average air temperature (°C)                                       | **10 – 40 °C**                                                    | Required                       |
+| `rh`      | Relative humidity (%)                                      | **10 – 90%**                                                      | Required                       |
+| `clo`     | Clothing insulation (clo)  *(see ASHRAE 55 Table 5-2 or Table C.1-C.3 ISO 7730)* | **0.0 – 1.5 clo**                                                 | Required                       |
+| `met`     | Metabolic rate (met) *(see ASHRAE 55 Table 5-1 or Table B.1 ISO 7730)*       | **0.8 – 2.0 met**                                                 | Required                       |
+| `tr`      | Mean radiant temperature (°C)                              | Typically **10 – 40 °C**                                          | Optional *(defaults to `ta`)*  |
+| `va`      | Air velocity (m/s)                                         | **0.0 – 2.0 m/s** *(up to 3.0 m/s with elevated airspeed limits)* | Optional *(defaults to `0.0`)* |
 
-### Optional Sensors:
-
-- `tr`: Mean radiant temperature (°C)  
-  *Defaults to `ta` (i.e. `ta`=`tr`=`to`) if not provided*
-- `va`: Air velocity (m/s)  
-  *Defaults to `0.0` m/s if not provided*
 
 You will select these entities via the UI during setup.
+
+### 🛠️ Advanced Configuration
+To improve the accuracy of thermal comfort calculations (such as PMV or SET), it is important to correctly define environmental input parameters beyond just basic room temperature. Two key parameters often require special consideration:
+
+🌡️ ta – Average Air Temperature
+ta represents the average air temperature in the occupant’s breathing or working zone. While it is sometimes approximated by a single room temperature sensor, in real environments it should reflect localized variations caused by HVAC systems, stratification, or airflow patterns.
+
+For example:
+
+In a room with an overhead air conditioner, the air temperature near the occupants' heads might be several degrees lower than the general room average.
+
+Near ventilation diffusers, localized cooling or heating can significantly alter perceived comfort.
+
+To improve precision, consider:
+
+Averaging temperatures from multiple sensors positioned at occupant height (typically 1.1 m for seated persons).
+
+Incorporating temperature bias in known affected zones (e.g., near windows or vents).
+
+🌐 tr – Mean Radiant Temperature
+tr is the mean radiant temperature, representing the average temperature of all surrounding surfaces "seen" by the occupant, weighted by their angle and distance. It plays a critical role in comfort, especially in:
+
+Spaces with cold or warm walls or uninsulated windows
+
+Rooms with significant solar radiation
+
+☀️ If the occupant is exposed to direct sunlight through a window, tr should account for the increased radiant heat — not just the average temperature of room surfaces.
+
+To estimate tr more accurately:
+
+Use globe temperature sensors, or
+
+Apply a weighted combination of wall/window temperatures and solar heat gain estimates.
 
 ---
 
