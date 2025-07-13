@@ -73,7 +73,7 @@ Apply a weighted combination of wall/window temperatures and solar heat gain est
 
 1. Go to HACS → Integrations → 3-dot menu → Custom repositories.
 2. Add this repository URL:  
-   `https://github.com/1iverea9er/ha-comfort-tool`  
+   `https://github.com/1iverea9er/Indoor-Thermal-Comfort`  
    with category: *Integration*.
 3. Install **Comfort Tool Sensors**.
 4. Restart Home Assistant.
