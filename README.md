@@ -95,6 +95,20 @@ Apply a weighted combination of wall/window temperatures and solar heat gain est
 
 ---
 
+## 🚫 Limits of Applicability
+This standard is only applicable to healthy individuals.
+It does not apply to occupants who meet any of the following criteria:
+
+a) Wear clothing ensembles with insulation exceeding 1.5 clo
+
+b) Wear highly impermeable clothing (e.g., protective suits)
+
+c) Are sleeping, reclining in contact with bedding, or able to adjust blankets or bedding
+
+These exclusions are defined in ANSI/ASHRAE Standard 55 and ISO 7730, since such conditions fall outside the assumptions of steady-state thermal physiology used in PMV/SET models.
+
+---
+
 ## 🧪 Notes
 
 - Internally uses a Python adaptation of the [comfort_tool](https://github.com/CenterForTheBuiltEnvironment/comfort_tool) model by the Center for the Built Environment (UC Berkeley).
