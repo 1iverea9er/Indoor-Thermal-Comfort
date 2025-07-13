@@ -75,7 +75,7 @@ Apply a weighted combination of wall/window temperatures and solar heat gain est
 2. Add this repository URL:  
    `https://github.com/1iverea9er/Indoor-Thermal-Comfort`  
    with category: *Integration*.
-3. Install **Comfort Tool Sensors**.
+3. Install **Indoor Thermal Comfort**.
 4. Restart Home Assistant.
 5. Add the integration via **Settings → Devices & Services → Add Integration** and search for **Indoor Thermal Comfort**.
 
