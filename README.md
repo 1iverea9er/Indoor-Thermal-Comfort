@@ -119,7 +119,7 @@ These exclusions are defined in ANSI/ASHRAE Standard 55 and ISO 7730, since such
 ## 💬 Community Discussion
 
 Discussion thread on the Home Assistant Community forum:  
-https://community.home-assistant.io/t/indoor-thermal-comfort-tool/901623/20
+https://community.home-assistant.io/t/indoor-thermal-comfort-tool/901623
 
 ---
 
