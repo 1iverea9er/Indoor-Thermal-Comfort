@@ -126,7 +126,7 @@ https://community.home-assistant.io/t/indoor-thermal-comfort-tool/901623
 ## 🧾 License
 
 This integration is a Python reimplementation based on the original JavaScript version by the [Center for the Built Environment](https://github.com/CenterForTheBuiltEnvironment/comfort_tool).  
-The original project is licensed under the GNU GPLv2 license, and this adaptation is licensed under the same terms. See the [LICENSE](LICENSE) file for details.
+The original project is licensed under the GNU GPLv2 license, and this adaptation is licensed under the same terms. 
 See the [LICENSE](LICENSE) file for full license terms.
 
 ---
