@@ -133,5 +133,5 @@ See the [LICENSE](LICENSE) file for full license terms.
 
 ## 🙏 Acknowledgements
 
-- [CBE Thermal Comfort Tool maintainers](https://github.com/CenterForTheBuiltEnvironment/comfort_tool)
+- [CBE Thermal Comfort Tool]([https://github.com/CenterForTheBuiltEnvironment/comfort_tool](https://cbe-berkeley.gitbook.io/thermal-comfort-tool/))[ maintainers]
 - Home Assistant community and HACS maintainers
