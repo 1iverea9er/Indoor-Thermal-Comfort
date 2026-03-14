@@ -1,5 +1,5 @@
 import logging
-from homeassistant.components.sensor import SensorEntity
+from homeassistant.components.sensor import SensorEntity, SensorStateClass
 from homeassistant.const import UnitOfTemperature, PERCENTAGE
 from homeassistant.helpers.entity import EntityCategory
 from .const import DOMAIN
@@ -43,6 +43,7 @@ class ComfortSensor(SensorEntity):
         self._attr_name = f"{prefix} {metric.upper()}"
         self._attr_unique_id = f"{DOMAIN}_{entry_id}_{metric}"
         self._attr_entity_category = EntityCategory.DIAGNOSTIC
+        self._attr_state_class = SensorStateClass.MEASUREMENT
         self._attr_native_value = None
 
         icon_map = {
