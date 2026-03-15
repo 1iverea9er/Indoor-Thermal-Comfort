@@ -1,6 +1,7 @@
 import logging
 from homeassistant.components.sensor import SensorEntity, SensorStateClass
 from homeassistant.const import UnitOfTemperature, PERCENTAGE
+from homeassistant.helpers.device_registry import DeviceEntryType, DeviceInfo
 from homeassistant.helpers.entity import EntityCategory
 from .const import DOMAIN
 from .comfort import calculate_thermal_comfort
@@ -42,9 +43,16 @@ class ComfortSensor(SensorEntity):
 
         self._attr_name = f"{prefix} {metric.upper()}"
         self._attr_unique_id = f"{DOMAIN}_{entry_id}_{metric}"
-        self._attr_entity_category = EntityCategory.DIAGNOSTIC
+#       self._attr_entity_category = EntityCategory.DIAGNOSTIC
         self._attr_state_class = SensorStateClass.MEASUREMENT
         self._attr_native_value = None
+        self._attr_device_info = DeviceInfo(
+            identifiers={(DOMAIN, entry_id)},
+            name=prefix,
+            manufacturer="Indoor Thermal Comfort",
+            model="Comfort Tool",
+            entry_type=DeviceEntryType.SERVICE,
+        )
 
         icon_map = {
             "pmv": "mdi:scale-balance",
