@@ -1,7 +1,7 @@
 {
   "domain": "comfort_tool",
   "name": "Indoor Thermal Comfort",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "documentation": "https://github.com/1iverea9er/indoor-thermal-comfort",
   "requirements": [],
   "dependencies": [],
