@@ -44,7 +44,6 @@ class ComfortSensor(SensorEntity):
         self._attr_name = f"{prefix} {metric.upper()}"
         self._attr_unique_id = f"{DOMAIN}_{entry_id}_{metric}"
 #       self._attr_entity_category = EntityCategory.DIAGNOSTIC
-        self._attr_state_class = SensorStateClass.MEASUREMENT
         self._attr_native_value = None
         self._attr_device_info = DeviceInfo(
             identifiers={(DOMAIN, entry_id)},
@@ -65,10 +64,13 @@ class ComfortSensor(SensorEntity):
         
         if metric == "set" or metric == "ce":
             self._attr_native_unit_of_measurement = UnitOfTemperature.CELSIUS
+            self._attr_state_class = SensorStateClass.MEASUREMENT
         elif metric == "ppd":
             self._attr_native_unit_of_measurement = PERCENTAGE
+            self._attr_state_class = SensorStateClass.MEASUREMENT
         elif metric == "pmv":
-            self._attr_native_unit_of_measurement = None  # PMV is unitless
+            self._attr_native_unit_of_measurement = None
+            self._attr_state_class = SensorStateClass.MEASUREMENT
         else:
             self._attr_native_unit_of_measurement = None
 
