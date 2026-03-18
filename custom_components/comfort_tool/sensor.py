@@ -69,7 +69,7 @@ class ComfortSensor(SensorEntity):
             self._attr_native_unit_of_measurement = PERCENTAGE
             self._attr_state_class = SensorStateClass.MEASUREMENT
         elif metric == "pmv":
-            self._attr_native_unit_of_measurement = "pmv"
+            self._attr_native_unit_of_measurement = None
             self._attr_state_class = SensorStateClass.MEASUREMENT
         else:
             self._attr_native_unit_of_measurement = None
