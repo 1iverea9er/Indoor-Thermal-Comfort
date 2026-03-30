@@ -4,11 +4,11 @@ from homeassistant.components.sensor import (
     SensorStateClass,
     SensorDeviceClass,
 )
-from homeassistant.const import UnitOfTemperature, PERCENTAGE
+from homeassistant.const import UnitOfTemperature, UnitOfSpeed, PERCENTAGE
 from homeassistant.helpers.device_registry import DeviceEntryType, DeviceInfo
 from .const import DOMAIN
 from .comfort import calculate_thermal_comfort
-from homeassistant.util.unit_conversion import TemperatureConverter
+from homeassistant.util.unit_conversion import TemperatureConverter, SpeedConverter
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -21,8 +21,8 @@ async def async_setup_entry(hass, entry, async_add_entities):
     rh = config["rh"]
     clo = config["clo"]
     met = config["met"]
-    tr = config.get("tr")  # Optional
-    va = config.get("va")  # Optional
+    tr = config.get("tr")
+    va = config.get("va")
     prefix = config.get("name", "Comfort")
 
     entities = []
@@ -61,7 +61,7 @@ class ComfortSensor(SensorEntity):
         self._attr_native_value = None
 
         self._attr_device_info = DeviceInfo(
-            identifiers={{(DOMAIN, entry_id)}},
+            identifiers={(DOMAIN, entry_id)},
             name=prefix,
             manufacturer="Indoor Thermal Comfort",
             model="Comfort Tool",
@@ -77,57 +77,80 @@ class ComfortSensor(SensorEntity):
         }
         self._attr_icon = icon_map.get(metric)
 
-        if metric in ("set", "ce"):
-            self._attr_native_unit_of_measurement = UnitOfTemperature.CELSIUS
-            self._attr_state_class = SensorStateClass.MEASUREMENT
-        elif metric == "ppd":
+        self._attr_native_unit_of_measurement = None
+
+        if metric == "ppd":
             self._attr_native_unit_of_measurement = PERCENTAGE
             self._attr_state_class = SensorStateClass.MEASUREMENT
         elif metric == "pmv":
             self._attr_native_unit_of_measurement = None
             self._attr_state_class = SensorStateClass.MEASUREMENT
-        else:
-            self._attr_native_unit_of_measurement = None
+        elif metric in ("set", "ce"):
+            self._attr_state_class = SensorStateClass.MEASUREMENT
 
     @property
     def native_value(self):
         return self._attr_native_value
 
     async def async_update(self):
+        ta_state = self._hass.states.get(self._ta)
+
         ta = self._get(self._ta)
         rh = self._get(self._rh)
         clo = self._get(self._clo)
         met = self._get(self._met)
 
         va = self._get(self._va) if self._va else 0.0
-        tr = self._get(self._tr) if self._tr else ta  # fallback to ta
+        tr = self._get(self._tr) if self._tr else ta
 
         if any(x is None for x in [ta, rh, clo, met]) or tr is None:
             self._attr_native_value = None
             return
 
         result = calculate_thermal_comfort(ta, tr, va, rh, clo, met)
-        self._attr_native_value = result.get(self._metric)
+        value = result.get(self._metric)
+
+        # ===== get unit of ta  =====
+        unit = None
+        if ta_state:
+            unit = ta_state.attributes.get("unit_of_measurement")
+
+        if unit is None:
+            unit = self._hass.config.units.temperature_unit
+
+        # ===== convert OUTPUT =====
+        if self._metric in ("set", "ce"):
+            if unit == UnitOfTemperature.FAHRENHEIT:
+                value = TemperatureConverter.convert(
+                    value,
+                    UnitOfTemperature.CELSIUS,
+                    UnitOfTemperature.FAHRENHEIT,
+                )
+                self._attr_native_unit_of_measurement = UnitOfTemperature.FAHRENHEIT
+            else:
+                self._attr_native_unit_of_measurement = UnitOfTemperature.CELSIUS
+
+        self._attr_native_value = value
 
     def _get(self, entity_id):
         state = self._hass.states.get(entity_id)
-
+    
         if not state:
             return None
-
+    
         try:
             value = float(state.state)
         except (ValueError, TypeError):
             return None
-
+    
         device_class = state.attributes.get("device_class")
         unit = state.attributes.get("unit_of_measurement")
-
-        # fallback если unit не указан
+    
+        # fallback
         if unit is None:
             unit = self._hass.config.units.temperature_unit
-
-        # авто-детект температуры
+    
+        # ===== TEMP =====
         if device_class == SensorDeviceClass.TEMPERATURE or unit in (
             UnitOfTemperature.CELSIUS,
             UnitOfTemperature.FAHRENHEIT,
@@ -138,5 +161,22 @@ class ComfortSensor(SensorEntity):
                     UnitOfTemperature.FAHRENHEIT,
                     UnitOfTemperature.CELSIUS,
                 )
-
+    
+        # ===== SPEED =====
+        elif device_class == SensorDeviceClass.SPEED or unit in (
+            UnitOfSpeed.METERS_PER_SECOND,
+            UnitOfSpeed.KILOMETERS_PER_HOUR,
+            UnitOfSpeed.MILES_PER_HOUR,
+            UnitOfSpeed.FEET_PER_SECOND,
+        ):
+            if unit != UnitOfSpeed.METERS_PER_SECOND:
+                try:
+                    value = SpeedConverter.convert(
+                        value,
+                        unit,
+                        UnitOfSpeed.METERS_PER_SECOND,
+                    )
+                except Exception:
+                    _LOGGER.warning("Failed to convert speed: %s %s", value, unit)
+    
         return value
