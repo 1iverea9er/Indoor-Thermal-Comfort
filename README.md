@@ -34,7 +34,30 @@ This integration requires the following existing entities to work:
 
 You will select these entities via the UI during setup.
 
-## 🚀 Quick Start
+---
+
+## 📦 Installation
+
+### Recommended: HACS
+
+1. Go to HACS → Integrations → 3-dot menu → Custom repositories.
+2. Add this repository URL:  
+   `https://github.com/1iverea9er/Indoor-Thermal-Comfort`  
+   with category: *Integration*.
+3. Search and install "**Indoor Thermal Comfort**".
+4. Restart Home Assistant.
+5. Add the integration via **Settings → Devices & Services → Add Integration** and search for "**Indoor Thermal Comfort**".
+
+### Manual Installation
+
+1. Copy the contents of this repository into: `custom_components/`
+2. Restart Home Assistant.
+3. Add the integration via UI as described above.
+
+---
+
+## Configuration
+### 🚀 Quick Start
 Below is a minimal working setup that **correctly accounts for humidity**.
 
 #### 1. Create helper `input_number` entities
@@ -98,26 +121,6 @@ Rooms with significant solar radiation
 To estimate tr more accurately:
 
 Apply a weighted combination of wall/window temperatures and solar heat gain estimates.
-
----
-
-## 📦 Installation
-
-### Recommended: HACS
-
-1. Go to HACS → Integrations → 3-dot menu → Custom repositories.
-2. Add this repository URL:  
-   `https://github.com/1iverea9er/Indoor-Thermal-Comfort`  
-   with category: *Integration*.
-3. Search and install "**Indoor Thermal Comfort**".
-4. Restart Home Assistant.
-5. Add the integration via **Settings → Devices & Services → Add Integration** and search for "**Indoor Thermal Comfort**".
-
-### Manual Installation
-
-1. Copy the contents of this repository into: `custom_components/`
-2. Restart Home Assistant.
-3. Add the integration via UI as described above.
 
 ---
 
