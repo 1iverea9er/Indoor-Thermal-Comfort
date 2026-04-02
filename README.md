@@ -90,6 +90,40 @@ Let's assume you already have temperature and humidity sensors in your room.
 - tr → empty
 - va → empty
 
+### 📝 Note on `clo` and `met` Calibration
+
+It is important to understand that `clo` (clothing insulation) and `met` (metabolic rate) should reflect **your personal comfort baseline**, not just theoretical values from tables.
+
+In practice, this means:
+
+👉 These parameters should be calibrated so that **PMV ≈ 0 when you actually feel comfortable**.
+
+#### Why this matters
+
+Thermal comfort models (PMV/SET) are based on average assumptions, but real perception varies depending on:
+
+- individual sensitivity  
+- adaptation to climate  
+- personal preferences  
+
+#### How to calibrate
+
+1. Wait until you feel thermally comfortable in your environment  
+2. Observe current conditions:
+   - temperature
+   - humidity
+   - airflow  
+3. Adjust `clo` and/or `met` until: PMV ≈ 0
+
+#### Result
+
+After calibration:
+
+- PMV becomes **personally meaningful**
+- Automations based on PMV/SET become significantly more accurate
+- The system adapts to *your* comfort, not a generic model
+
+
 ### 🛠️ Advanced Configuration
 To improve the accuracy of thermal comfort calculations (such as PMV or SET), it is important to correctly define environmental input parameters beyond just basic room temperature. Two key parameters often require special consideration:
 
@@ -145,10 +179,9 @@ These exclusions are defined in ANSI/ASHRAE Standard 55 and ISO 7730, since such
 
 ---
 
-## 🧪 Notes
+## 🧪 Under the hood
 
 - Internally uses a Python adaptation of the [comfort_tool](https://github.com/CenterForTheBuiltEnvironment/comfort_tool) model by the Center for the Built Environment (UC Berkeley).
-- All sensors update automatically when any of the input values change.
 
 ---
 
