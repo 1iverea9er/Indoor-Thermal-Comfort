@@ -34,6 +34,40 @@ This integration requires the following existing entities to work:
 
 You will select these entities via the UI during setup.
 
+## 🚀 Quick Start
+Below is a minimal working setup that **correctly accounts for humidity**.
+
+#### 1. Create helper `input_number` entities
+
+```yaml
+input_number:
+  clo:
+    name: Clothing insulation
+    min: 0.0
+    max: 1.5
+    step: 0.01
+    initial: 0.61
+
+  met:
+    name: Metabolic rate
+    min: 0.8
+    max: 2.0
+    step: 0.1
+    initial: 1.0
+```
+#### 2. Prepare temperature and humidity sensors
+Let's assume you already have temperature and humidity sensors in your room.
+- `sensor.temperature_room`
+- `sensor.humidity_room`
+
+#### 3. Select entities in UI
+- ta → `sensor.temperature_room`
+- rh → `sensor.humidity_room`
+- clo → `input_number.clo`
+- met → `input_number.met`
+- tr → empty
+- va → empty
+
 ### 🛠️ Advanced Configuration
 To improve the accuracy of thermal comfort calculations (such as PMV or SET), it is important to correctly define environmental input parameters beyond just basic room temperature. Two key parameters often require special consideration:
 
