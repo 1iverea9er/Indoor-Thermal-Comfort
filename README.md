@@ -16,26 +16,6 @@ This integration calculates and provides the following thermal comfort metrics a
 
 ---
 
-## ⚙️ Configuration
-
-This integration requires the following existing entities to work:
-
-### Input Parameters (Sensors / Input Numbers):
-
-| Parameter | Description                                                | Recommended Range                                       | Required / Optional            |
-| --------- | ---------------------------------------------------------- | ----------------------------------------------------------------- | ------------------------------ |
-| `ta`      | Average air temperature (°C)                                       | **10 – 40 °C**                                                    | Required                       |
-| `rh`      | Relative humidity (%)                                      | **10 – 90%**                                                      | Required                       |
-| `clo`     | Clothing insulation (clo)  *(see ASHRAE 55 Table 5-2 or Table C.1-C.3 ISO 7730)* | **0.0 – 1.5 clo**                                                 | Required                       |
-| `met`     | Metabolic rate (met) *(see ASHRAE 55 Table 5-1 or Table B.1 ISO 7730)*       | **0.8 – 2.0 met**                                                 | Required                       |
-| `tr`      | Mean radiant temperature (°C)                              | Typically **10 – 40 °C**                                          | Optional *(defaults to `ta`)*  |
-| `va`      | Air velocity (m/s)                                         | **0.0 – 2.0 m/s** *(up to 3.0 m/s with elevated airspeed limits)* | Optional *(defaults to `0.0`)* |
-
-
-You will select these entities via the UI during setup.
-
----
-
 ## 📦 Installation
 
 ### Recommended: HACS
@@ -56,7 +36,26 @@ You will select these entities via the UI during setup.
 
 ---
 
-## Configuration
+## ⚙️ Configuration
+
+This integration requires the following existing entities to work:
+
+### Input Parameters (Sensors / Input Numbers):
+
+| Parameter | Description                                                | Recommended Range                                       | Required / Optional            |
+| --------- | ---------------------------------------------------------- | ----------------------------------------------------------------- | ------------------------------ |
+| `ta`      | Average air temperature (°C)                                       | **10 – 40 °C**                                                    | Required                       |
+| `rh`      | Relative humidity (%)                                      | **10 – 90%**                                                      | Required                       |
+| `clo`     | Clothing insulation (clo)  *(see ASHRAE 55 Table 5-2 or Table C.1-C.3 ISO 7730)* | **0.0 – 1.5 clo**                                                 | Required                       |
+| `met`     | Metabolic rate (met) *(see ASHRAE 55 Table 5-1 or Table B.1 ISO 7730)*       | **0.8 – 2.0 met**                                                 | Required                       |
+| `tr`      | Mean radiant temperature (°C)                              | Typically **10 – 40 °C**                                          | Optional *(defaults to `ta`)*  |
+| `va`      | Air velocity (m/s)                                         | **0.0 – 2.0 m/s** *(up to 3.0 m/s with elevated airspeed limits)* | Optional *(defaults to `0.0`)* |
+
+
+You will select these entities via the UI during setup.
+
+---
+
 ### 🚀 Quick Start
 Below is a minimal working setup that **correctly accounts for humidity**.
 
