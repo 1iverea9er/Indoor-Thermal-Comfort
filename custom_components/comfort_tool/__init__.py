@@ -27,11 +27,13 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
 
 async def _async_options_updated(hass: HomeAssistant, entry: ConfigEntry) -> None:
-    """Reload entry when options change so platforms are added/removed."""
+    """Reload entry when options change."""
     await hass.config_entries.async_reload(entry.entry_id)
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
-    config = {**entry.data, **entry.options}
-    platforms = _PLATFORMS_SOLAR if config.get(CONF_DIRECT_IRRADIANCE) else _PLATFORMS_BASE
-    return await hass.config_entries.async_unload_platforms(entry, platforms)
+    # Always attempt to unload ALL possible platforms.
+    # We can't rely on current config here — options may already reflect
+    # the new (post-save) state, so solar platforms would be missed
+    # if direct_irradiance was just removed.
+    return await hass.config_entries.async_unload_platforms(entry, _PLATFORMS_SOLAR)
