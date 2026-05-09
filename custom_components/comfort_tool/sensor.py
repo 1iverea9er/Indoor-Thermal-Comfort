@@ -124,13 +124,13 @@ class _BaseComfortSensor(SensorEntity):
 
     def _get(self, entity_id, value_type=None):
         """
-        Read a value from a sensor entity and convert to the correct
-        base unit:
-    
+        Read a value from an entity and convert it to the expected base unit.
+
         value_type:
             - "temperature" → °C
             - "speed" → m/s
-            - None → no conversion
+            - "dimensionless" → no conversion, even if the entity has no unit
+            - None → infer conversion from device_class only
         """
     
         state = self._hass.states.get(entity_id)
@@ -148,15 +148,18 @@ class _BaseComfortSensor(SensorEntity):
         #
         # Temperature conversion to °C
         #
-        if (
-            value_type == "temperature"
-            or device_class == SensorDeviceClass.TEMPERATURE
-        ):
-    
-            # Fallback only for actual temperature values
-            if unit is None:
+        is_temperature = value_type == "temperature" or (
+            value_type is None and device_class == SensorDeviceClass.TEMPERATURE
+        )
+        if is_temperature:
+
+            # Unitless values should only inherit Home Assistant's configured
+            # temperature unit for inputs that this integration configured as
+            # temperatures (Ta/MRT). Dimensionless inputs such as clo/met must
+            # never be converted on Fahrenheit installations.
+            if unit is None and value_type == "temperature":
                 unit = self._hass.config.units.temperature_unit
-    
+
             if unit == UnitOfTemperature.FAHRENHEIT:
                 value = TemperatureConverter.convert(
                     value,
@@ -308,8 +311,8 @@ class ComfortSensor(_BaseComfortSensor):
     async def async_update(self):
         ta  = self._get(self._ta, "temperature")
         rh  = self._get(self._rh)
-        clo = self._get(self._clo)
-        met = self._get(self._met)
+        clo = self._get(self._clo, "dimensionless")
+        met = self._get(self._met, "dimensionless")
         va  = self._get(self._va, "speed") if self._va else 0.0
         tr  = self._get(self._tr, "temperature") if self._tr else ta
 
