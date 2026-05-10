@@ -103,7 +103,7 @@ Assuming you already have:
 | va | *(leave empty)* |
 | Direct solar beam intensity | *(leave empty to skip solar correction)* |
 
-> This minimal configuration is enough to correctly account for the effect of humidity on thermal comfort.
+This minimal configuration is enough to correctly account for the effect of humidity on thermal comfort.
 
 ---
 
