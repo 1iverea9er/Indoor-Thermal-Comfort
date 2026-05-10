@@ -58,7 +58,7 @@ Calculates and provides the following thermal comfort metrics as sensors:
 | `met` | Metabolic rate *(ASHRAE 55 Table 5-1, ISO 7730 Table B.1)* | **0.8 – 2.0 met** | ✅ Required |
 | `tr` | Mean radiant temperature | Typically same range as `ta` | ☑️ Optional *(defaults to `ta`)* |
 | `va` | Air velocity | **0.0 – 2.0 m/s** *(up to 3.0 m/s with elevated airspeed limits)* | ☑️ Optional *(defaults to 0.0)* |
-| `direct_irradiance` | Direct solar beam intensity sensor (W/m²) | — | ☑️ Optional — enables solar correction |
+| `I_dir` | Direct solar beam intensity | 0 - 1000 W/m² | ☑️ Optional — enables solar correction |
 
 All sensors accept any Home Assistant entity (`sensor.*`, `input_number.*`).
 
@@ -119,11 +119,11 @@ Six additional configuration entities appear in the device card under **Settings
 
 | Entity | Description | Range |
 |--------|-------------|-------|
-| **Solar Azimuth** | Sun azimuth angle relative to the occupant's facing direction (°) | 0 – 360° |
+| **Solar Azimuth** | Sun azimuth angle relative to the occupant's facing direction (°) | 0 – 180° |
 | **Glazing Solar Transmittance (T_sol)** | Solar transmittance of the window glass | 0.0 – 1.0 |
 | **Sky View Factor (f_svv)** | Fraction of the sky dome visible through the window from the occupant's position | 0.0 – 1.0 |
 | **Body Exposed to Sun (f_bes)** | Fraction of the body surface directly exposed to sunlight | 0.0 – 1.0 |
-| **Body SW Absorptivity (asa)** | Average shortwave absorptivity of the body and clothing surface *(ASHRAE 55 default: 0.7)* | 0.0 – 1.0 |
+| **Body SW Absorptivity (asa)** | Average shortwave absorptivity of the body and clothing surface *(ASHRAE 55 default: 0.7)* | 0.2 – 0.9 |
 | **Occupant Posture** | Body posture affecting the projected area factor *fp* | Standing / Seated / Supine |
 
 Solar altitude is read automatically from the built-in `sun.sun` entity — no additional configuration needed.
@@ -149,6 +149,8 @@ Solar altitude is read automatically from the built-in `sun.sun` entity — no a
 ---
 
 ## 📝 Calibrating `clo` and `met`
+
+> Note: It is better to perform calibration without taking into account solar radiation and on a cloudy day  (or after sunset) to eliminate unnecessary uncertainties.
 
 `clo` and `met` should reflect **your personal comfort baseline**, not just theoretical table values.
 
