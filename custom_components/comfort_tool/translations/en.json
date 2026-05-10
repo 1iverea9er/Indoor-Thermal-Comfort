@@ -11,7 +11,11 @@
           "va": "Air velocity (Va)",
           "rh": "Relative humidity (RH)",
           "clo": "Clothing level (clo)",
-          "met": "Metabolic rate (met)"
+          "met": "Metabolic rate (met)",
+          "direct_irradiance": "Direct solar beam intensity (optional)"
+        },
+        "data_description": {
+          "direct_irradiance": "If selected — solar radiation correction will be enabled. Additional configuration parameters will appear in the device card."
         }
       }
     },
@@ -20,6 +24,27 @@
     },
     "abort": {
       "single_instance_allowed": "Only one instance of the integration is allowed."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Indoor Thermal Comfort Setup",
+        "description": "Select existing sensors and input parameters.",
+        "data": {
+          "name": "Integration name",
+          "ta": "Average air temperature (Ta)",
+          "tr": "Mean radiant temperature (MRT)",
+          "va": "Air velocity (Va)",
+          "rh": "Relative humidity (RH)",
+          "clo": "Clothing level (clo)",
+          "met": "Metabolic rate (met)",
+          "direct_irradiance": "Direct solar beam intensity (optional)"
+        },
+        "data_description": {
+          "direct_irradiance": "If selected — solar radiation correction will be enabled. Additional configuration parameters will appear in the device card."
+        }
+      }
     }
   },
   "entity": {
@@ -43,6 +68,39 @@
       "comfort_tool_sensation": {
         "name": "Thermal Sensation",
         "state": "Sensation"
+      },
+      "comfort_tool_erf_solar": {
+        "name": "ERF"
+      },
+      "comfort_tool_delta_mrt_solar": {
+        "name": "ΔMrt Solar"
+      }
+    },
+    "number": {
+      "comfort_tool_solar_azimuth": {
+        "name": "Solar Azimuth"
+      },
+      "comfort_tool_t_sol": {
+        "name": "Glazing Solar Transmittance"
+      },
+      "comfort_tool_f_svv": {
+        "name": "Sky View Factor"
+      },
+      "comfort_tool_f_bes": {
+        "name": "Body Exposed to Sun Fraction"
+      },
+      "comfort_tool_asa": {
+        "name": "Body SW Absorptivity"
+      }
+    },
+    "select": {
+      "comfort_tool_posture": {
+        "name": "Occupant Posture",
+        "state": {
+          "standing": "Standing",
+          "seated": "Seated",
+          "supine": "Supine"
+        }
       }
     }
   }

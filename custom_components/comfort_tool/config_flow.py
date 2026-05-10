@@ -1,39 +1,43 @@
 from homeassistant import config_entries
 import voluptuous as vol
 from homeassistant.helpers.selector import selector
+from .const import (
+    DOMAIN,
+    CONF_DIRECT_IRRADIANCE,
+    POSTURES, DEFAULT_POSTURE,
+)
 
-from .const import DOMAIN
+SENSOR_SELECTOR = selector({"entity": {"domain": ["sensor", "input_number"]}})
 
-SENSOR_SELECTOR = selector({
-    "entity": {
-        "domain": ["sensor", "input_number"]
-    }
-})
-
-CONFIG_SCHEMA = vol.Schema({
+MAIN_SCHEMA = vol.Schema({
     vol.Optional("name"): str,
-    vol.Required("ta"): SENSOR_SELECTOR,
-    vol.Optional("tr"): SENSOR_SELECTOR,
-    vol.Optional("va"): SENSOR_SELECTOR,
-    vol.Required("rh"): SENSOR_SELECTOR,
+    vol.Required("ta"):  SENSOR_SELECTOR,
+    vol.Optional("tr"):  SENSOR_SELECTOR,
+    vol.Optional("va"):  SENSOR_SELECTOR,
+    vol.Required("rh"):  SENSOR_SELECTOR,
     vol.Required("clo"): SENSOR_SELECTOR,
     vol.Required("met"): SENSOR_SELECTOR,
+    vol.Optional(CONF_DIRECT_IRRADIANCE): SENSOR_SELECTOR,
 })
+
 
 class ComfortToolConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     VERSION = 1
 
     async def async_step_user(self, user_input=None):
         if user_input is not None:
-            return self.async_create_entry(title="Indoor Thermal Comfort", data=user_input)
-
-        return self.async_show_form(step_id="user", data_schema=CONFIG_SCHEMA)
+            return self.async_create_entry(
+                title=user_input.get("name", "Indoor Thermal Comfort"),
+                data=user_input,
+            )
+        return self.async_show_form(step_id="user", data_schema=MAIN_SCHEMA)
 
     async def async_step_reauth(self, user_input=None):
         return await self.async_step_user()
 
     async def async_step_import(self, import_config):
         return await self.async_step_user()
+
 
 class ComfortToolOptionsFlowHandler(config_entries.OptionsFlow):
     def __init__(self, config_entry):
@@ -43,19 +47,23 @@ class ComfortToolOptionsFlowHandler(config_entries.OptionsFlow):
         if user_input is not None:
             return self.async_create_entry(title="", data=user_input)
 
-        options = self.config_entry.options
-        return self.async_show_form(
-            step_id="init",
-            data_schema=vol.Schema({
-                vol.Optional("name", default=options.get("name", self.config_entry.title)): str,
-                vol.Required("ta", default=options.get("ta", "")): SENSOR_SELECTOR,
-                vol.Optional("tr", default=options.get("tr", "")): SENSOR_SELECTOR,
-                vol.Optional("va", default=options.get("va", "")): SENSOR_SELECTOR,
-                vol.Required("rh", default=options.get("rh", "")): SENSOR_SELECTOR,
-                vol.Required("clo", default=options.get("clo", "")): SENSOR_SELECTOR,
-                vol.Required("met", default=options.get("met", "")): SENSOR_SELECTOR,
-            })
-        )
+        current = {**self.config_entry.data, **self.config_entry.options}
+
+        schema = vol.Schema({
+            vol.Optional("name",
+                default=current.get("name", self.config_entry.title)): str,
+            vol.Required("ta",  default=current.get("ta",  "")): SENSOR_SELECTOR,
+            vol.Optional("tr",  default=current.get("tr",  "")): SENSOR_SELECTOR,
+            vol.Optional("va",  default=current.get("va",  "")): SENSOR_SELECTOR,
+            vol.Required("rh",  default=current.get("rh",  "")): SENSOR_SELECTOR,
+            vol.Required("clo", default=current.get("clo", "")): SENSOR_SELECTOR,
+            vol.Required("met", default=current.get("met", "")): SENSOR_SELECTOR,
+            vol.Optional(CONF_DIRECT_IRRADIANCE,
+                default=current.get(CONF_DIRECT_IRRADIANCE, "")): SENSOR_SELECTOR,
+        })
+
+        return self.async_show_form(step_id="init", data_schema=schema)
+
 
 async def async_get_options_flow(config_entry):
     return ComfortToolOptionsFlowHandler(config_entry)
