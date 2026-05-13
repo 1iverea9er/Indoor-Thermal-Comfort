@@ -2,10 +2,11 @@
   "domain": "comfort_tool",
   "name": "Indoor Thermal Comfort",
   "version": "1.1.0",
-  "documentation": "https://github.com/1iverea9er/indoor-thermal-comfort",
-  "requirements": [],
-  "dependencies": [],
+  "documentation": "https://github.com/1iverea9er/Indoor-Thermal-Comfort",
+  "issue_tracker": "https://github.com/1iverea9er/Indoor-Thermal-Comfort/issues",
   "codeowners": ["@1iverea9er"],
   "config_flow": true,
-  "logo": "logo.png"
+  "iot_class": "calculated",
+  "requirements": [],
+  "dependencies": []
 }
