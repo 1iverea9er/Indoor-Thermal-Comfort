@@ -67,8 +67,8 @@ class _BaseComfortSensor(SensorEntity):
         self._attr_device_info = DeviceInfo(
             identifiers={(DOMAIN, entry.entry_id)},
             name=prefix,
-            manufacturer="Indoor Thermal Comfort",
-            model="Comfort Tool",
+            manufacturer="",
+            model="Indoor Thermal Comfort",
             entry_type=DeviceEntryType.SERVICE,
         )
 
