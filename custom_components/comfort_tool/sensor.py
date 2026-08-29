@@ -294,6 +294,12 @@ class ComfortSensor(_BaseComfortSensor):
         elif metric == "pmv":
             self._attr_native_unit_of_measurement = None
             self._attr_state_class = SensorStateClass.MEASUREMENT
+        elif metric == "ts":
+            self._attr_device_class = SensorDeviceClass.ENUM
+            self._attr_options = [
+                "Cold", "Cool", "Slightly Cool",
+                "Neutral", "Slightly Warm", "Warm", "Hot",
+            ]
         else:
             self._attr_native_unit_of_measurement = None
 
