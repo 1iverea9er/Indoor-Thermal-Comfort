@@ -66,8 +66,16 @@
         "state": "CE"
       },
       "comfort_tool_sensation": {
-        "name": "Ощущение",
-        "state": "Ощущение"
+        "name": "Тепловое ощущение",
+        "state": {
+          "cold": "Холодно",
+          "cool": "Прохладно",
+          "slightly_cool": "Слегка прохладно",
+          "neutral": "Комфортно",
+          "slightly_warm": "Слегка тепло",
+          "warm": "Тепло",
+          "hot": "Жарко"
+        }
       },
       "comfort_tool_erf_solar": {
         "name": "ERF"

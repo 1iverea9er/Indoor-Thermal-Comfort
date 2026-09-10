@@ -516,12 +516,12 @@ def get_sensation_by_class(pmv: float, comfort_class: str = "B") -> str:
     # Define boundaries based on neutral_range as a scaling factor
     # e.g., for class A (±0.2): boundaries = ±0.2, ±2×0.2, ±3×0.2, etc.
     thresholds = [
-        (-3 * neutral_range, "Cold"),
-        (-2 * neutral_range, "Cool"),
-        (-1 * neutral_range, "Slightly Cool"),
-        (neutral_range, "Neutral"),
-        (2 * neutral_range, "Slightly Warm"),
-        (3 * neutral_range, "Warm"),
+        (-3 * neutral_range, "cold"),
+        (-2 * neutral_range, "cool"),
+        (-1 * neutral_range, "slightly_cool"),
+        (neutral_range, "neutral"),
+        (2 * neutral_range, "slightly_warm"),
+        (3 * neutral_range, "warm"),
     ]
 
     # Classify PMV based on the thresholds
