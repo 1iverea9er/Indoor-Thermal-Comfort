@@ -529,4 +529,4 @@ def get_sensation_by_class(pmv: float, comfort_class: str = "B") -> str:
         if pmv < threshold:
             return label
 
-    return "Hot"
+    return "hot"
